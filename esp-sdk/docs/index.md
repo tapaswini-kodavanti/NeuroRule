@@ -126,7 +126,7 @@ When prompted for a git username and password enter the following. Note when ent
 
 ```bash
 Username for 'https://github.com': <type username here>
-Password for 'https://github.com': <type passowrd here>
+Password for 'https://github.com': <type password here>
 ```
 
 # Ubuntu 14.04 and 18.04 installation

@@ -41,8 +41,12 @@ class NetworkConfigFilter(ConfigFilter):
         network_config = config['network']
 
         # Do the work
-        network_config['inputs'] = self._build_network_inputs()
-        network_config['outputs'] = self._build_network_outputs()
+        if 'inputs' not in network_config:
+            network_config['inputs'] = self._build_network_inputs()
+        if 'outputs' not in network_config:
+            network_config['outputs'] = self._build_network_outputs()
+        # network_config['inputs'] = self._build_network_inputs()
+        # network_config['outputs'] = self._build_network_outputs()
 
         return config
 

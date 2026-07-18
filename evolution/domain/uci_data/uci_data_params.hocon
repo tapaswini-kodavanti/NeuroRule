@@ -22,7 +22,7 @@
         "data_set": "load_breast_cancer"
     },
     "evolution": {
-        "nb_generations": 5000,
+        "nb_generations": 200,
         "population_size": 100,
         "nb_elites": 10,
         "parent_selection": "tournament",

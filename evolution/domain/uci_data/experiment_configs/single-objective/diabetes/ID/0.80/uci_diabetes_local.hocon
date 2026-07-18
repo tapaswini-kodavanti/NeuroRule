@@ -1,0 +1,134 @@
+{
+    "network": {
+         # Inputs and Outputs will be generated from the data set.
+         "hidden_layers": [
+            {"layer_name": "hidden_1",
+             "layer_type": "Dense",
+             "layer_params": {
+                 "units": 32,
+                 "activation": "tanh",
+                 "use_bias": true
+                 }
+             }
+        ],
+
+        "inputs": [
+            {"name": "BMI",                     "size": 1, "values": ["float"]},
+            {"name": "MentHlth",                "size": 1, "values": ["float"]},
+            {"name": "PhysHlth",                "size": 1, "values": ["float"]},
+            {"name": "Age",                     "size": 1, "values": ["float"]},
+            {"name": "Education",               "size": 1, "values": ["float"]},
+            {"name": "Income",                  "size": 1, "values": ["float"]},
+
+            {"name": "HighBP_0.0",              "size": 1, "values": ["bool"]},
+            {"name": "HighBP_1.0",              "size": 1, "values": ["bool"]},
+
+            {"name": "HighChol_0.0",            "size": 1, "values": ["bool"]},
+            {"name": "HighChol_1.0",            "size": 1, "values": ["bool"]},
+
+            {"name": "CholCheck_0.0",           "size": 1, "values": ["bool"]},
+            {"name": "CholCheck_1.0",           "size": 1, "values": ["bool"]},
+
+            {"name": "Smoker_0.0",              "size": 1, "values": ["bool"]},
+            {"name": "Smoker_1.0",              "size": 1, "values": ["bool"]},
+
+            {"name": "Stroke_0.0",              "size": 1, "values": ["bool"]},
+            {"name": "Stroke_1.0",              "size": 1, "values": ["bool"]},
+
+            {"name": "HeartDiseaseorAttack_0.0","size": 1, "values": ["bool"]},
+            {"name": "HeartDiseaseorAttack_1.0","size": 1, "values": ["bool"]},
+
+            {"name": "PhysActivity_0.0",        "size": 1, "values": ["bool"]},
+            {"name": "PhysActivity_1.0",        "size": 1, "values": ["bool"]},
+
+            {"name": "Fruits_0.0",              "size": 1, "values": ["bool"]},
+            {"name": "Fruits_1.0",              "size": 1, "values": ["bool"]},
+
+            {"name": "Veggies_0.0",             "size": 1, "values": ["bool"]},
+            {"name": "Veggies_1.0",             "size": 1, "values": ["bool"]},
+
+            {"name": "HvyAlcoholConsump_0.0",   "size": 1, "values": ["bool"]},
+            {"name": "HvyAlcoholConsump_1.0",   "size": 1, "values": ["bool"]},
+
+            {"name": "AnyHealthcare_0.0",       "size": 1, "values": ["bool"]},
+            {"name": "AnyHealthcare_1.0",       "size": 1, "values": ["bool"]},
+
+            {"name": "NoDocbcCost_0.0",         "size": 1, "values": ["bool"]},
+            {"name": "NoDocbcCost_1.0",         "size": 1, "values": ["bool"]},
+
+            {"name": "GenHlth_1.0",             "size": 1, "values": ["bool"]},
+            {"name": "GenHlth_2.0",             "size": 1, "values": ["bool"]},
+            {"name": "GenHlth_3.0",             "size": 1, "values": ["bool"]},
+            {"name": "GenHlth_4.0",             "size": 1, "values": ["bool"]},
+            {"name": "GenHlth_5.0",             "size": 1, "values": ["bool"]},
+
+            {"name": "DiffWalk_0.0",            "size": 1, "values": ["bool"]},
+            {"name": "DiffWalk_1.0",            "size": 1, "values": ["bool"]},
+
+            {"name": "Sex_0.0",                 "size": 1, "values": ["bool"]},
+            {"name": "Sex_1.0",                 "size": 1, "values": ["bool"]}
+        ],
+
+        "outputs": [
+            {
+                "name": "Diabetes_binary",
+                "size": 2,
+                "activation": "softmax",
+                "use_bias": true,
+                "values": ["Diabetes_binary_0.0", "Diabetes_binary_1.0"]
+            }
+        ]
+    },
+    "domain_config": {
+        "domain_name"   : "uci_data",
+        "fitness"       : "uci_nn_fitness",
+        "config_filter_class_name": "SklearnNetworkConfigFilter",
+        "evaluator_class_name": "UciDataEvaluator",
+
+        "data_set": "load_breast_cancer",
+        "target_names": ["Diabetes_binary_0.0", "Diabetes_binary_1.0"],
+        
+
+        ## TRAINING DATA ##
+        "synthetic_data_file": "data/diabetes/datasets/0.80/train/ID/data.csv",
+        "weights_file": "data/diabetes/models/0.80/weights.pth",
+
+        ## TESTING DATA ##
+        "raw_data_file": "data/diabetes/datasets/0.80/test/ID+OOD/data.csv",              ## BASELINE
+        "in_distribution_data": "data/diabetes/datasets/0.80/test/ID/data.csv",           ## ID
+        "out_of_distribution_data": "data/diabetes/datasets/0.80/test/OOD/data.csv",      ## OOD
+
+        
+    },
+    "evolution": {
+        "nb_generations": 200,
+        "population_size": 100,
+        "nb_elites": 10,
+        "parent_selection": "tournament",
+        "fitness" : [
+            { "metric_name": "score", "maximize": true, "target": 1.0}
+        ],
+        "remove_population_pct": 0.8,
+        "early_stop" : true,
+        "novelty_selection_multiplier" : 1.5,
+        "novelty_pulsation_cycle" : 1,
+        "mutation_probability": 0.7
+    },
+    "LEAF": {
+        "esp_host_official": "v1.esp.evolution.ml",
+        "esp_host": null,
+        "esp_port": 50051,
+        "representation": "RuleBased",
+        # "representation": "NNWeights",
+        "experiment_id":"uci_diabetes_test",
+        "reevaluate_elites": false,
+        "distributed" : false,
+        "coevolution" : false,
+        "version": "0.0.1",
+        "persistence_dir": "candidate-solutions/",
+        "candidates_to_persist": "best"
+    },
+    "experiment_config": {
+        "domain": "uci_data"
+    }
+}

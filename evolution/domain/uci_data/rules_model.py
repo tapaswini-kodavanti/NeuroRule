@@ -64,6 +64,7 @@ class RulesModel():
         else:
             shape_vars = {str(i): config_var[i]['name']
                           for i in range(len(config_var))}
+        
         return shape_vars
 
     def to_string(self):

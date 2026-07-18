@@ -10,24 +10,39 @@
                  "use_bias": true
                  }
              }
-        ]
+        ],
+        
     },
     "domain_config": {
         "domain_name"   : "uci_data",
-        "fitness"       : "uci_data_fitness",
+        "fitness"       : "uci_nn_fitness",
         "config_filter_class_name": "SklearnNetworkConfigFilter",
         "evaluator_class_name": "UciDataEvaluator",
-        # "data_set": "load_iris"
-        # "data_set": "load_wine"
-        "data_set": "load_breast_cancer"
+
+
+        "data_set": "load_wine",
+        # "raw_data_file": "data/kidney/datasets/raw_data/kidney_modified.csv",
+        "raw_data_file": "data/heart_disease/datasets/raw_data/heart_modified.csv",
+        # "target_names": ["CKD_Status_0", "CKD_Status_1"],
+        "target_names": ["HeartDisease_0", "HeartDisease_1"],
+
+        "synthetic_data_file": "data/heart_disease/datasets/mix/90_percent/150_samples.csv",
+        "weights_file": "data/heart_disease/model_weights/baseline/90_percent.pth",
+        "in_distribution_data": "data/heart_disease/datasets/baseline/90_percent/in_distribution.csv",
+        "out_of_distribution_data": "data/heart_disease/datasets/baseline/90_percent/out_of_distribution.csv",
+
+        # "synthetic_data_file": "data/kidney/datasets/mix/99.8_percent/300_samples.csv",
+        # "weights_file": "data/kidney/model_weights/baseline/99.8_percent.pth",
+        # "in_distribution_data": "data/kidney/datasets/baseline/99.8_percent/in_distribution.csv",
+        # "out_of_distribution_data": "data/kidney/datasets/baseline/99.8_percent/out_of_distribution.csv",
     },
     "evolution": {
-        "nb_generations": 5000,
+        "nb_generations": 200,
         "population_size": 100,
         "nb_elites": 10,
         "parent_selection": "tournament",
         "fitness" : [
-            { "metric_name": "score", "maximize": true, "target": 0.94}
+            { "metric_name": "score", "maximize": true, "target": 1.0}
         ],
         "remove_population_pct": 0.8,
         "early_stop" : true,
@@ -41,7 +56,10 @@
         "esp_port": 50051,
         "representation": "RuleBased",
         # "representation": "NNWeights",
-        "experiment_id":"uci_cancer_test",
+        # "experiment_id":"uci_wine_test",
+        # "experiment_id":"uci_cancer_test",
+        "experiment_id":"uci_heart_test",
+        # "experiment_id":"uci_kidney_test",
         "reevaluate_elites": false,
         "distributed" : false,
         "coevolution" : false,

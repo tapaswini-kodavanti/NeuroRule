@@ -1,7 +1,7 @@
 # Do the source-available stuff first to fast-fail if credentials are not right
-git+https://${LEAF_SOURCE_CREDENTIALS}@github.com/leaf-ai/leaf-common.git@1.2.18
-git+https://${LEAF_PRIVATE_SOURCE_CREDENTIALS}@github.com/leaf-ai/pyleafai.git@1.1.4
-git+https://${LEAF_PRIVATE_SOURCE_CREDENTIALS}@github.com/leaf-ai/evolution-service.git@3.3.3
+# git+https://${LEAF_SOURCE_CREDENTIALS}@github.com/leaf-ai/leaf-common.git@1.2.18
+# git+https://${LEAF_PRIVATE_SOURCE_CREDENTIALS}@github.com/leaf-ai/pyleafai.git@1.1.4
+# git+https://${LEAF_PRIVATE_SOURCE_CREDENTIALS}@github.com/leaf-ai/evolution-service.git@3.3.3
 
 keras==3.8.0
 tensorflow==2.16.1

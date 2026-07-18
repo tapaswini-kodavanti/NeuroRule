@@ -1,0 +1,94 @@
+{
+    "network": {
+         # Inputs and Outputs will be generated from the data set.
+         "hidden_layers": [
+            {"layer_name": "hidden_1",
+             "layer_type": "Dense",
+             "layer_params": {
+                 "units": 32,
+                 "activation": "tanh",
+                 "use_bias": true
+                 }
+             }
+        ],
+
+        "inputs": [
+            {"name": "Age", "size": 1, "values": ["float"]},
+            {"name": "RestingBP", "size": 1, "values": ["float"]},
+            {"name": "Cholesterol", "size": 1, "values": ["float"]},
+            {"name": "FastingBS", "size": 1, "values": ["float"]},
+            {"name": "MaxHR", "size": 1, "values": ["float"]},
+            {"name": "Oldpeak", "size": 1, "values": ["float"]},
+            {"name": "Sex_M", "size": 1, "values": ["bool"]},
+            {"name": "ChestPainType_ATA", "size": 1, "values": ["bool"]},
+            {"name": "ChestPainType_NAP", "size": 1, "values": ["bool"]},
+            {"name": "ChestPainType_TA", "size": 1, "values": ["bool"]},
+            {"name": "RestingECG_Normal", "size": 1, "values": ["bool"]},
+            {"name": "RestingECG_ST", "size": 1, "values": ["bool"]},
+            {"name": "ExerciseAngina_Y", "size": 1, "values": ["bool"]},
+            {"name": "ST_Slope_Flat", "size": 1, "values": ["bool"]},
+            {"name": "ST_Slope_Up", "size": 1, "values": ["bool"]}
+        ],
+        "outputs": [
+            {
+            "name": "HeartDisease",
+            "size": 2,
+            "activation": "softmax",
+            "use_bias": true,
+            "values": ["HeartDisease_0", "HeartDisease_1"]
+            }
+        ]
+    },
+    "domain_config": {
+        "domain_name"   : "uci_data",
+        "fitness"       : "uci_nn_fitness",
+        "config_filter_class_name": "SklearnNetworkConfigFilter",
+        "evaluator_class_name": "UciDataEvaluator",
+
+        "data_set": "load_breast_cancer",
+        "target_names": ["HeartDisease_0", "HeartDisease_1"],
+        
+
+        ## TRAINING DATA ##
+        "synthetic_data_file": "data/heart/datasets/0.95/train/ID+synthetic/data.csv",
+        "weights_file": "data/heart/models/0.95/weights.pth",
+
+        ## TESTING DATA ##
+        "raw_data_file": "data/heart/datasets/0.95/test/ID+OOD/data.csv",              ## BASELINE
+        "in_distribution_data": "data/heart/datasets/0.95/test/ID/data.csv",           ## ID
+        "out_of_distribution_data": "data/heart/datasets/0.95/test/OOD/data.csv",      ## OOD
+
+        
+    },
+    "evolution": {
+        "nb_generations": 200,
+        "population_size": 100,
+        "nb_elites": 10,
+        "parent_selection": "tournament",
+        "fitness" : [
+            { "metric_name": "score", "maximize": true, "target": 1.0}
+        ],
+        "remove_population_pct": 0.8,
+        "early_stop" : true,
+        "novelty_selection_multiplier" : 1.5,
+        "novelty_pulsation_cycle" : 1,
+        "mutation_probability": 0.7
+    },
+    "LEAF": {
+        "esp_host_official": "v1.esp.evolution.ml",
+        "esp_host": null,
+        "esp_port": 50051,
+        "representation": "RuleBased",
+        # "representation": "NNWeights",
+        "experiment_id":"uci_heart_test",
+        "reevaluate_elites": false,
+        "distributed" : false,
+        "coevolution" : false,
+        "version": "0.0.1",
+        "persistence_dir": "candidate-solutions/",
+        "candidates_to_persist": "best"
+    },
+    "experiment_config": {
+        "domain": "uci_data"
+    }
+}

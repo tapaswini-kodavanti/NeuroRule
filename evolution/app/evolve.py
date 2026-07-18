@@ -8,6 +8,11 @@ from typing import Dict
 
 import numpy
 
+##
+
+import leaf_common
+print(leaf_common.__file__)
+
 from leaf_common.config.resolver import Resolver
 from leaf_common.config.config_filter import ConfigFilter
 
@@ -74,6 +79,7 @@ class EvolveApp():
         evaluator = self.resolve_evaluator(config)
 
         persistence_dir = esp_service.train(evaluator, checkpoint_id)
+        print("Results persisted to: " + persistence_dir)
 
         return persistence_dir
 
@@ -203,6 +209,7 @@ class EvolveApp():
                             help="A checkpoint id from a previous population",
                             default=None)
         args = parser.parse_args()
+
         self.train(args.params, checkpoint_id=args.checkpoint_id)
 
 
