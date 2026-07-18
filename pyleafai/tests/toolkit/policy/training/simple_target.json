@@ -1,0 +1,8 @@
+{
+    "probability" : 0.8637961009809808,
+    "imageSize" : 768,
+    "complete" : true,
+    "color" : "VIOLET",
+    "dropoutRate" : 0.25,
+    "activation" : "sigmoid"
+}

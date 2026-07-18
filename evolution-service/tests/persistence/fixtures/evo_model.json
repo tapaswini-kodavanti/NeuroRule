@@ -1,0 +1,37 @@
+{
+    "evolution": {
+        "mutation_probability": 0.1,
+        "remove_population_pct": 0.5,
+        "mutation_factor": 0.1,
+        "parent_selection": "proportion",
+        "population_size": 4,
+        "mutation_type": "gaussian_noise_percentage",
+        "crossover": "5_points",
+        "nb_elites": 1
+    },
+    "network": {
+        "inputs": [
+            {
+                "name": "input_1",
+                "size": 5
+            },
+            {
+                "name": "input_2",
+                "size": 7
+            }
+        ],
+        "nb_hidden_units": 4,
+        "use_bias": true,
+        "activation_function": "tanh",
+        "outputs": [
+            {
+                "name": "output_1",
+                "size": 3
+            },
+            {
+                "name": "output_2",
+                "size": 4
+            }
+        ]
+    }
+}

@@ -1,0 +1,17 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - secrets.yaml
+  - signed-gateway.yaml
+  - gateway.yaml
+  - deployment/overlays/production
+patchesStrategicMerge:
+  - versions.yaml
+secretGenerator:
+- name: esp-secrets
+  literals:
+  - AWS_ACCESS_KEY_ID=[Something useful]
+  - AWS_SECRET_ACCESS_KEY=[Something useful]
+  - ESP_MODELS_BUCKET=[The name of a dedicated bucket on S3 designed for use by ESP servers]
+  - MODEL_SERVICE_GRPC_INTERFACE='[::]'
+  - MODEL_SERVICE_GRPC_PORT=50051

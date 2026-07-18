@@ -1,0 +1,39 @@
+
+// Copyright (C) 2019-2023 Cognizant Digital Business, Evolutionary AI.
+// All Rights Reserved.
+// Issued under the Academic Public License.
+//
+// You can be released from the terms, and requirements of the Academic Public
+// License by purchasing a commercial license.
+// Purchase of a commercial license is mandatory for any use of the
+// esp-service Software in commercial settings.
+//
+// END COPYRIGHT
+syntax = "proto3";
+
+package system_info;
+
+// Endpoint that allows clients to query the service for service-wide information.
+// The information provided will evolve over time but will typically include things like 'version' and 'uptime'.
+service SystemInfoService{
+
+    // Access system information
+    rpc GetSystemInfo (SystemInfoRequest) returns (SystemInfoResponse) {
+    }
+}
+
+message SystemInfoRequest {
+    // no params for now
+}
+
+message SystemInfoResponse {
+    string version = 1;
+    string uptime = 2;
+    string start_time = 3;
+    string status = 4;
+    string persist_path = 5;
+    string persist_mechanism = 6;
+    string latest_commit = 7;
+}
+
+

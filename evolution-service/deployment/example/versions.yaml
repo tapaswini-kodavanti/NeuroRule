@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: esp-blue
+spec:
+  replicas: 2
+  template:
+    spec:
+      containers:
+          - name: esp
+            image: leaf/esp-service:v3
+            imagePullPolicy: Always
+            env:
+            - name: ESP_MODELS_BUCKET
+              value: karl-mutch-esp"
+#      imagePullSecrets:
+#      - name: docker_key
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: esp-green
+spec:
+  replicas: 1
+  template:
+    spec:
+      containers:
+          - name: esp
+            image: leaf/esp-service:v2
+            imagePullPolicy: Always
+            env:
+            - name: ESP_MODELS_BUCKET
+              value: karl-mutch-esp"
+#      imagePullSecrets:
+#      - name: docker_key
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: grpc-esp-virtual-service
+spec:
+  http:
+  - match:
+    - uri:
+        prefix: "/"
+    route:
+    - destination:
+        host: esp
+        subset: blue
+---

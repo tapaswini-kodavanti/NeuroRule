@@ -1,0 +1,47 @@
+# Do the source-available stuff first to fast-fail if credentials are not right
+git+https://${LEAF_SOURCE_CREDENTIALS}@github.com/leaf-ai/leaf-common.git@1.2.18
+git+https://${LEAF_PRIVATE_SOURCE_CREDENTIALS}@github.com/leaf-ai/pyleafai.git@1.1.4
+git+https://${LEAF_PRIVATE_SOURCE_CREDENTIALS}@github.com/leaf-ai/evolution-service.git@3.3.3
+
+keras==3.8.0
+tensorflow==2.16.1
+h5py>=3.10.0
+numpy>=1.26.4
+
+# leaf-common pulls this in as well, but with a >= specification
+# Here, we nail it down to avoid TypeErrors from protobuf 3.20.x
+# or later.
+grpcio>=1.62.0
+protobuf>=4.25.3
+
+# For gRPC retries
+tenacity==8.2.3
+
+# Stick to 1.5.3 for compatibility with pandasai==1.5.21
+pandas>=1.5.3
+
+# For plots and stats
+matplotlib==3.8.3
+
+# For concurrency and improved pickling
+pathos==0.3.2
+
+# Transient dependency from esp-sdk's usage of pathos for multiprocessing
+# whose recent (5/20/2022) 1.7.6.5 version has caused trouble with
+# leaf-distributed unpacking of worker code.
+ppft==1.7.6.8
+
+# Auto versioning
+setuptools==74.1.2
+setuptools_scm==8.1.0
+
+# Tests
+pytest==8.0.2
+pytest-timer==1.0.0
+
+# Code quality
+flake8==7.0.0
+pylint==3.1.0
+
+# Tool for documentation generation
+mkdocs==1.5.3

@@ -1,0 +1,67 @@
+# Base image
+FROM python:3.10-slim
+
+LABEL maintainer=donn.goodhew@cognizant.com
+ENV LANG C.UTF-8
+
+# Specify versions here
+ENV PYTHON_VERSION 3.10
+ENV PIP3_VERSION 24.0
+ENV KUBECTL_VERSION 1.18.6
+ENV ISTIOCTL_VERSION 1.5.0
+ENV KUSTOMIZE_VERSION 3.5.4
+ENV KUSTOMIZE_DOWNLOAD https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize/
+
+# Install required tools 
+ENV DEBIAN_FRONTEND noninteractive 
+RUN apt-get update \ 
+    && apt-get install -y --no-install-recommends --no-install-suggests \
+        git-core \
+        g++ \
+        vim \
+        sudo \
+        tzdata \
+        curl \
+        wget \
+        tree \
+        letsencrypt \
+    && pip3 install --upgrade pip==${PIP3_VERSION} \
+    && pip3 install virtualenv \
+                    wheel \
+                    awscli --upgrade \
+    # install kubectl
+    && curl -LO https://dl.k8s.io/release/v${KUBECTL_VERSION}/bin/linux/amd64/kubectl \
+    && curl -LO https://dl.k8s.io/release/v${KUBECTL_VERSION}/bin/linux/amd64/kubectl.sha256 \
+    && install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl \
+    # download kustomize
+    && wget ${KUSTOMIZE_DOWNLOAD}v${KUSTOMIZE_VERSION}/kustomize_v${KUSTOMIZE_VERSION}_linux_amd64.tar.gz \
+    # download and install istio
+    && curl -L https://istio.io/downloadIstio | ISTIO_VERSION=${ISTIOCTL_VERSION} TARGET_ARCH=x86_64 sh - \
+
+    # create non-root user as per best practices
+    # To do the work of kube admin, user does need
+    # sudo privileges.
+    && adduser --disabled-password --gecos '' leaf \
+    && adduser leaf sudo \
+    && echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+USER leaf
+ENV APP_HOME /home/leaf
+
+# Set additional env variables
+ENV esp_venv ${APP_HOME}/venv/esp-${PYTHON_VERSION}
+ENV PATH=${esp_venv}/bin:${APP_HOME}/bin:${APP_HOME}/istio-${ISTIOCTL_VERSION}/bin:${PATH}
+
+RUN mkdir -p ${APP_HOME} \
+    && python${PYTHON_VERSION} -m venv $esp_venv \
+    # Deal with kustomize
+    && sudo tar xzf kustomize_v3.5.4_linux_amd64.tar.gz \ 
+    && sudo  mkdir ${APP_HOME}/bin \
+    && sudo mv kustomize ${APP_HOME}/bin/kustomize \ 
+    && sudo chmod u+x ${APP_HOME}/bin/kustomize \
+    && sudo rm kustomize_v3.5.4_linux_amd64.tar.gz \
+    # Deal with istioctl 
+    && sudo mv istio-${ISTIOCTL_VERSION} ${HOME}
+
+# Get the repo into the container and set permissions
+COPY --chown=leaf:leaf . ${APP_HOME}
+WORKDIR ${APP_HOME}

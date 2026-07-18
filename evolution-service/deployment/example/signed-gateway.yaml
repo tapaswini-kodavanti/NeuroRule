@@ -1,0 +1,22 @@
+# The ingress block is used to route requests using path prefix strings.
+#
+# URL paths for formed in gRPC using '[package].[service]/[method]'. gRPC documentation
+# on the topic can be found at, https://github.com/grpc/grpc/blob/master/doc/PROTOCOL-HTTP2.md
+#
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: ingress-gateway
+spec:
+  selector:
+    istio: ingressgateway # use istio default controller
+  servers:
+  - port:
+      number: 443
+      name: grpc
+      protocol: HTTPS
+    hosts:
+    - "*"
+    tls:
+      mode: SIMPLE
+      credentialName: "esp-tls-credentials"

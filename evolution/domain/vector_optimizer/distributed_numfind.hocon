@@ -1,0 +1,99 @@
+{
+    "representation_config": {
+        "structure_spec": {
+            "type": {
+                "vector" : {
+                    "type" : [
+                        {
+                            "type" : "Double",
+                            "lowerBound" : 0.0,
+                            "upperBound" : 1.0,
+                            "precision"  : 0.00001,
+                            "scale" : "linear"
+                        }
+                    ],
+                    "minLength" : 1,
+                    "maxLength" : 1,
+                    "componentChangeRate" : 0.5
+                }
+            }
+        }
+    },
+    "domain_config": {
+        "domain_name"   : "numfind",
+        "domain_target" : {
+            "target_vector" : [0.79213]
+        },
+        "evaluator_class_name": "VectorOptimizerEvaluator"
+    },
+    "evolution": {
+        "nb_generations": 100,
+        "population_size": 10,
+        "nb_elites": 1,
+        "parent_selection": "tournament",
+        "fitness" : [
+            { "metric_name": "score", "maximize": false, "target": 0}
+        ],
+        "remove_population_pct": 0.8,
+        "early_stop" : true,
+        "novelty_selection_multiplier" : 1,
+        "novelty_pulsation_cycle" : 1,
+        "mutation_probability": 0.1
+    },
+    "LEAF": {
+        "esp_host_official": "v1.esp.evolution.ml",
+        "esp_host": null,
+        "esp_port": 50051,
+        "representation": "Structure",
+        "experiment_id":"numfind-test-1",
+        "reevaluate_elites": false,
+        "distributed" : false,
+        "version": "0.0.1",
+        "persistence_dir": "candidate-solutions/",
+        "candidates_to_persist": "best",
+        "max_workers": 1
+    },
+    "experiment_config": {
+        "domain": "vector_optimizer",
+
+        "timeout_settings": [[0.8, 120], [0.9, 120], [0.95, 120]],
+
+        "completion_service": {
+
+            "resources_needed": {
+                "cpus": 1,
+                "ram": "8g",
+                "hdd": "30g",
+                "gpus": 0,
+                "gpuMem": "10g"
+            },
+
+            "timeout": 300,
+
+            "sleep_time": 1,
+
+            "cloud": null,
+
+            "local": true,
+
+            "studio_ml_config": {
+
+                "database": {
+                    "type": "local",
+                    "endpoint": "/tmp/endpoint/",
+                    "bucket": "esp-studioml-database",
+                    "authentication": "none"
+                },
+                "storage": {
+                    "type": "local",
+                    "endpoint": "/tmp/endpoint/",
+                    "bucket": "esp-studioml-storage"
+                },
+                "queue": "local",
+                "saveMetricsFrequency": "1m",
+                "saveWorkspaceFrequency": "1m",
+                "verbose": "error"
+            }
+        }
+    }
+}

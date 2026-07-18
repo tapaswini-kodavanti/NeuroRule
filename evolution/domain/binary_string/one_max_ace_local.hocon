@@ -1,0 +1,61 @@
+{
+    # This file is used for running the OneMax domain
+    # against a local version of the service as a library
+    # instead of an actual gRPC service in a separate container.
+    # This requires access to the ESP Service source code.
+
+    # Config specifying the structure we are trying to evolve
+    "representation_config": {
+        "structure_spec": {
+            "type": {
+                "vector" : {
+                    "type" : [
+                        {
+                            "type" : "Boolean"
+                        }
+                    ],
+                    "minLength" : 16,
+                    "maxLength" : 16,
+                    "componentChangeRate" : 0.5
+                }
+            }
+        }
+    },
+    "domain_config": {
+        "domain_name"   : "binary_string",
+        "fitness"       : "one_max_fitness",
+        "evaluator_class_name": "BinaryStringAceEvaluator"
+    },
+    "evolution": {
+        "nb_generations": 5000,
+        "population_size": 100,
+        "nb_elites": 10,
+        "parent_selection": "tournament",
+        "fitness" : [
+            { "metric_name": "score", "maximize": true, "target": 16}
+        ],
+        "remove_population_pct": 0.8,
+        "early_stop" : true,
+        "novelty_selection_multiplier" : 1,
+        "novelty_pulsation_cycle" : 1,
+        "mutation_probability": 0.1
+    },
+    "LEAF": {
+        "esp_host_official": "v1.esp.evolution.ml",
+        "esp_host": null,
+        "esp_port": 50051,
+        "representation": "Structure",
+        "experiment_id":"one_max_test",
+        "reevaluate_elites": false,
+        "distributed" : false,
+        # ace_factor: the number of elite candidates using to augment the rest of the pool
+        # (zero means No ACE at all)
+        "ace_factor" : 1,
+        "version": "0.0.1",
+        "persistence_dir": "candidate-solutions/",
+        "candidates_to_persist": "best"
+    },
+    "experiment_config": {
+        "domain": "binary_string"
+    }
+}

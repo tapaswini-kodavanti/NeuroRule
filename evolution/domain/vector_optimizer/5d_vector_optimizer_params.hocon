@@ -1,0 +1,60 @@
+{
+    "representation_config": {
+        "structure_spec": {
+            "type": {
+                "vector" : {
+                    "type" : [
+                        {
+                            "type" : "Double",
+                            "lowerBound" : 0,
+                            "upperBound" : 1,
+                            "precision"  : 0.001,
+                            "scale" : "linear"
+                        }
+                    ],
+                    "minLength" : 5,
+                    "maxLength" : 5,
+                    "componentChangeRate" : 0.5
+                }
+            }
+        }
+    },
+    "domain_config": {
+        "domain_name"   : "vector_optimizer",
+        "domain_target" : {
+            "target_vector" : [0.792, 0.273, 0.369, 0.573, 0.169]
+        },
+        "evaluator_class_name": "VectorOptimizerCoevaluator",
+        "fitness"       : "euclidean_distance"
+    },
+    "evolution": {
+        "nb_generations": 5000,
+        "population_size": 100,
+        "nb_elites": 10,
+        "parent_selection": "tournament",
+        "fitness" : [
+            { "metric_name": "score", "maximize": false, "target": 0.000001}
+        ],
+        "remove_population_pct": 0.8,
+        "early_stop" : true,
+        "novelty_selection_multiplier" : 1,
+        "novelty_pulsation_cycle" : 1,
+        "mutation_probability": 0.5
+    },
+    "LEAF": {
+        "esp_host_official": "v1.esp.evolution.ml",
+        "esp_host": "localhost",
+        "esp_port": 50051,
+        "representation": "Structure",
+        "experiment_id":"5d-coevolution2-5",
+        "reevaluate_elites": false,
+        "distributed" : true,
+        "coevolution" : true,
+        "version": "0.0.1",
+        "persistence_dir": "candidate-solutions/",
+        "candidates_to_persist": "best"
+    },
+    "experiment_config": {
+        "domain": "vector_optimizer"
+    }
+}

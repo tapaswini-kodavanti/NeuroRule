@@ -1,0 +1,25 @@
+{
+    "type": {
+        "complete" : {
+            "type": "Boolean"
+        },
+        "nested": {
+            "type": {
+                "imageSize" : {
+                    "type": "Integer",
+                    "lowerBound": 128,
+                    "upperBound": 1024,
+                    "precision": 128
+                },
+                "probability": {
+                    "type": "Double",
+                    "lowerBound": 0.0,
+                    "upperBound": 1.0,
+                    "precision": 0.05
+                }
+            },
+            "fieldChangeRate": 0.6
+        }
+    },
+    "fieldChangeRate": 0.3
+}

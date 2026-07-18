@@ -1,0 +1,55 @@
+{
+    "network": {
+         # Inputs and Outputs will be generated from the data set.
+         "hidden_layers": [
+            {"layer_name": "hidden_1",
+             "layer_type": "Dense",
+             "layer_params": {
+                 "units": 32,
+                 "activation": "tanh",
+                 "use_bias": true
+                 }
+             }
+        ]
+    },
+    "domain_config": {
+        "domain_name"   : "uci_data",
+        "fitness"       : "uci_data_fitness",
+        "config_filter_class_name": "SklearnNetworkConfigFilter",
+        "evaluator_class_name": "UciDataEvaluator",
+        # "data_set": "load_iris"
+        # "data_set": "load_wine"
+        "data_set": "load_breast_cancer"
+    },
+    "evolution": {
+        "nb_generations": 5000,
+        "population_size": 100,
+        "nb_elites": 10,
+        "parent_selection": "tournament",
+        "fitness" : [
+            { "metric_name": "score", "maximize": true, "target": 0.94}
+        ],
+        "remove_population_pct": 0.8,
+        "early_stop" : true,
+        "novelty_selection_multiplier" : 1.5,
+        "novelty_pulsation_cycle" : 1,
+        "mutation_probability": 0.7
+    },
+    "LEAF": {
+        "esp_host_official": "v1.esp.evolution.ml",
+        "esp_host": "localhost",
+        "esp_port": 50051,
+        "representation": "RuleBased",
+        # "representation": "NNWeights",
+        "experiment_id":"uci_cancer_test",
+        "reevaluate_elites": false,
+        "distributed" : false,
+        "coevolution" : false,
+        "version": "0.0.1",
+        "persistence_dir": "candidate-solutions/",
+        "candidates_to_persist": "best"
+    },
+    "experiment_config": {
+        "domain": "uci_data"
+    }
+}

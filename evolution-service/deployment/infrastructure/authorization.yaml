@@ -1,0 +1,20 @@
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: esp-auth
+  namespace: default
+spec:
+  # This policy denies access to GetSystemInfo for any users not having the `admin:esp` permission
+  # All other request types (next-population) etc. are unaffected
+  action: DENY
+  rules:
+    - to:
+      - operation:
+          # Always 'POST' for gRPC per Istio doc
+          methods: ["POST"]
+          paths: ["/system_info.SystemInfoService/GetSystemInfo"]
+      when:
+        - key: request.auth.claims[scope]
+          # notValues is idiomatic Istio for "any values except the one(s) listed here"
+          # See https://istio.io/docs/concepts/security exclusionMatching
+          notValues: ["admin:esp"]

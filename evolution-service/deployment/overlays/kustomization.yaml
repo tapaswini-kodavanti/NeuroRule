@@ -1,0 +1,6 @@
+resources:
+  - ../infrastructure
+  - production/blue
+  - production/green
+  - production/v3.blue
+  - production/v3.green

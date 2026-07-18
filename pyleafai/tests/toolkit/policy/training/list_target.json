@@ -1,0 +1,10 @@
+{
+    "arrayOfDoubles" : [0.1927389623474755, 0.2735096068168464,
+                        0.3691993517183949, 0.45094110649976343,
+                        0.6727250798580141],
+    "arrayOfIntegers" : [ 768, 896 ],
+    "arrayOfBooleans" : [ true, false, true ],
+    "arrayOfEnums" : [ "GREEN", "GREEN", "VIOLET", "VIOLET" ]
+}
+
+

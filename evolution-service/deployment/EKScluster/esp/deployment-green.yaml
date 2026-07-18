@@ -1,0 +1,31 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: esp-green
+  namespace: es
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: esp
+  template:
+    metadata:
+      labels:
+        app: esp
+        version: green
+    spec:
+      containers:
+      - name: esp
+        image: 634208487213.dkr.ecr.us-west-2.amazonaws.com/esp:3.1.7
+        imagePullPolicy: Always
+        env:
+          - name: ESP_MODELS_BUCKET
+            value: "esp-models"
+        resources:
+          requests:
+            memory: "2Gi"
+            cpu: "500m"
+          limits:
+            memory: "8Gi"
+            cpu: "4.0"

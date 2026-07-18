@@ -1,0 +1,80 @@
+{
+    # This file is used for running IndirectVect on the leading ones domain
+    # against a local version of the service as a library
+    # instead of an actual gRPC service in a separate container.
+    # This requires access to the ESP Service source code.
+
+    # Config specifying the architecture of the NN to evolve.
+    # The output size specifies the size of the vector.
+    # This value should match the target score in "fitness".
+    "network": {
+        "inputs": [
+            {
+                "name": "fixed_input",
+                "size": 1,
+                "values": [
+                    "float"
+                ]
+            }
+        ],
+        "argmax_on_outputs": false,
+        "hidden_layers": [
+            {
+                "layer_name": "hidden_1",
+                "layer_type": "Dense",
+                "layer_params": {
+                    "units": 64,
+                    "activation": "relu",
+                    "use_bias": true
+                }
+            }
+        ],
+        "outputs": [
+            {
+                "name": "vector",
+                "size": 64,
+                "activation": "sigmoid",
+                "use_bias": true
+            },
+        ]
+    },
+    "domain_config": {
+        "domain_name"   : "indirect_vect",
+        "fitness"       : "leading_one_fitness",
+        "evaluator_class_name": "IndirectVectEvaluator"
+    },
+    "evolution": {
+        "nb_generations": 5000,
+        "population_size": 100,
+        "nb_elites": 10,
+        "parent_selection": "tournament",
+        "fitness" : [
+            { "metric_name": "score", "maximize": true, "target": 64}
+        ],
+        "remove_population_pct": 0.0,
+        "early_stop" : true,
+        #"novelty_selection_multiplier" : 1,
+        #"novelty_pulsation_cycle" : 1,
+        "mutation_probability": 0.9,
+        "mutation_factor": 0.1,
+        "initialization_distribution": "orthogonal",
+        "initialization_range": 1
+    },
+    "LEAF": {
+        "esp_host_official": "v1.esp.evolution.ml",
+        "esp_host": null,
+        "esp_port": 50051,
+        "representation": "NNWeights",
+        "experiment_id":"weak_select_indirect_vect_1_64",
+        "reevaluate_elites": false,
+        "distributed" : false,
+        "coevolution" : false,
+        "version": "0.0.1",
+        "persistence_dir": "candidate-solutions/",
+        "candidates_to_persist": "best",
+        "max_workers": 16
+    },
+    "experiment_config": {
+        "domain": "indirect_vect"
+    }
+}

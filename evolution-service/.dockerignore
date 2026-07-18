@@ -1,0 +1,10 @@
+**/*.ipynb
+.git
+.gitignore
+.idea/
+.ipynb_checkpoints/
+Dockerfile
+dockerfiles
+.MANIFEST.in
+venv/
+

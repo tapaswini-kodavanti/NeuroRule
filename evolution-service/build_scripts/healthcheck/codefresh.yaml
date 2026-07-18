@@ -1,0 +1,94 @@
+version: "1.0"
+## Healthcheck for the evolution service
+## Figure out the latest released esp-sdk version
+## Take that container, copy in our simple test file
+## Run the test, text the AWS topic us-west-2:634208487213:ESP_MONITOR
+## in the event of a failure. This script to run on a cron job currently
+## every 4 hours.
+
+steps:
+    create_aws_profile:	
+        title: "Create AWS Profile"	
+        image: python:3.8-slim	
+        commands:	
+          - pip3 install -q awscli --cache-dir=${{CF_VOLUME_PATH}}/pip-cache	
+          - |	
+            cat << EOF > ${{CF_VOLUME_PATH}}/credentials	
+            [login]	
+            aws_access_key_id = ${AWS_ACCESS_KEY_ID}	
+            aws_secret_access_key = ${AWS_SECRET_ACCESS_KEY}	
+            [platprod]	
+            role_arn = arn:aws:iam::634208487213:role/LeafCI	
+            source_profile = login	
+            EOF
+
+    determine_latest_esp_sdk_image:
+        title: "Determine latest esp-sdk Docker image"
+        image: python:3.8-slim
+        commands:
+          - cat ${{CF_VOLUME_PATH}}/env_vars_to_export
+          - mkdir -p ~/.aws
+          - cp ${{CF_VOLUME_PATH}}/credentials ~/.aws/
+          - pip3 install -q awscli --cache-dir=${{CF_VOLUME_PATH}}/pip-cache
+          - >
+            cf_export HIGH_VER_IMAGETAG=$(
+            aws ecr describe-images
+            --profile platprod
+            --repository-name 'esp/esp-sdk'
+            --region 'us-west-2'
+            --query 'sort_by(imageDetails,& imagePushedAt)[-1].imageTags[0]'
+            --output text
+            --no-paginate
+            )
+    
+    clone-evolution-service:
+        title: "Clone evolution-service repo"
+        type: "git-clone"
+        repo: "leaf-ai/evolution-service"
+        # Because this is a cron trigger, we set the
+        # branch via a pipeline variable. Also this gives us
+        # testing flexbility.
+        revision: ${{TARGET_BRANCH}}
+    
+    test_esp_service:
+        title: "Run small esp experiment to test"
+        image: 634208487213.dkr.ecr.us-west-2.amazonaws.com/esp/esp-sdk:${{HIGH_VER_IMAGETAG}}
+        registry: prod_uswest2
+        fail_fast: false
+        commands:
+          - echo "Testing using esp-sdk image version $HIGH_VER_IMAGETAG"
+          - cp ${{CF_VOLUME_PATH}}/evolution-service/build_scripts/healthcheck/esp_example.py .
+          - cp ${{CF_VOLUME_PATH}}/evolution-service/build_scripts/healthcheck/experiment_params.hocon .
+          - python esp_example.py
+          
+    text_result:
+        title: "Send message to topic"
+        description: "Text if test fails, or if passes and optional flag set"
+        image: python:3.8-slim
+        commands:
+          - cat ${{CF_VOLUME_PATH}}/env_vars_to_export
+          - mkdir -p ~/.aws
+          - cp ${{CF_VOLUME_PATH}}/credentials ~/.aws/
+          - pip3 install -q awscli --cache-dir=${{CF_VOLUME_PATH}}/pip-cache
+          - aws sns publish
+            --profile platprod
+            --region us-west-2
+            --topic-arn arn:aws:sns:us-west-2:634208487213:ESP_MONITOR
+            --message "ESP health check - ${{test_esp_service.result}}"
+        when:
+            condition:
+              any:
+                failed_test: test_esp_service.result == 'failure'
+                text_anyway: ${{TEXT_ON_PASS}}
+
+    force_pipeline_failure_if_test_fails:
+        title: "Force pipeline failure"
+        image: alpine:3.14.0
+        commands:
+          - echo "Forcing pipeline to fail because the test of esp service failed"
+          - cp NOSUCHFILE
+        when:
+            condition:
+              all:
+                failed_test: test_esp_service.result == 'failure'
+

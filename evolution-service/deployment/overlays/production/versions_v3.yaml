@@ -1,0 +1,27 @@
+# Contains the Docker image versions for the V3 service
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: esp-v3.blue
+  namespace: es
+spec:
+  replicas: 2
+  template:
+    spec:
+      containers:
+        - name: esp
+          image: 634208487213.dkr.ecr.us-west-2.amazonaws.com/esp:3.0.0
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: esp-v3.green
+  namespace: es
+spec:
+  replicas: 2
+  template:
+    spec:
+      containers:
+        - name: esp
+          image: 634208487213.dkr.ecr.us-west-2.amazonaws.com/esp:3.0.0
+---

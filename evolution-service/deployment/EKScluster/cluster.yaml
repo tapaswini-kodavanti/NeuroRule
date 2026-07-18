@@ -1,0 +1,60 @@
+# cluster.yaml
+# This example is based off the weaveworks Kubeflow template found at
+# https://github.com/weaveworks/eksctl/blob/main/examples/23-kubeflow-spot-instance.yaml
+#
+# This example takes a less agressive approach to the hardware being requested
+#
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+
+metadata:
+  name: esp
+  region: us-west-2
+  version: '1.25'
+  tags:
+    # Add more cloud tags if needed for billing
+    environment: esp
+
+availabilityZones: ["us-west-2b", "us-west-2c"]
+iam:
+  withOIDC: true
+
+cloudWatch:
+    clusterLogging:
+        # enable specific types of cluster control plane logs
+        enableTypes: ["audit", "authenticator", "controllerManager", "scheduler"]
+        # all supported types: "api", "audit", "authenticator", "controllerManager", "scheduler"
+        # supported special values: "*" and "all"
+
+nodeGroups:
+  - name: overhead
+    ssh: # import public key from file
+      publicKeyName: eks-clusters
+      allow: false
+    desiredCapacity: 1
+    minSize: 1
+    maxSize: 3
+    # Set one nodegroup with 100GB volumes for non GPU components to get deployed.
+    volumeSize: 30
+    volumeType: gp2
+    instanceType: m6a.large
+    availabilityZones: ["us-west-2b", "us-west-2c"]
+    labels:
+      nodetype: "overhead"
+    tags:
+      # EC2 tags required for cluster-autoscaler auto-discovery
+      k8s.io/cluster-autoscaler/node-template/label/lifecycle: OnDemand
+      k8s.io/cluster-autoscaler/node-template/label/aws.amazon.com/spot: "false"
+      k8s.io/cluster-autoscaler/node-template/label/gpu-count: "0"
+      k8s.io/cluster-autoscaler/enabled: "true"
+      k8s.io/cluster-autoscaler/leaf-production2: "owned"
+    iam:
+      attachPolicyARNs:
+        - arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy
+        - arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy
+        - arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly
+        - arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore
+        - arn:aws:iam::aws:policy/AmazonS3FullAccess
+      withAddonPolicies:
+        autoScaler: true
+        cloudWatch: true

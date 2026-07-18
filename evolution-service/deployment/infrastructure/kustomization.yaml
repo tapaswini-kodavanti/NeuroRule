@@ -1,0 +1,7 @@
+resources:
+    - auth.yaml
+    - auth_v3.yaml
+    - service.yaml
+    - honey.yaml
+    - namespace.yaml
+    - service_v3.yaml

@@ -1,0 +1,118 @@
+{
+    # This file is used for running the NAS Bench domain
+    # against a local version of the service as a library
+    # instead of an actual gRPC service in a separate container.
+    # This requires access to the ESP Service source code.
+
+    # Config specifying the structure we are trying to evolve
+    "representation_config": {
+        "structure_spec": {
+            "type": {
+                "vector0" : {
+                    "type" : [
+                        {
+                            "type" : "Boolean"
+                        }
+                    ],
+                    "minLength" : 6,
+                    "maxLength" : 6,
+                    "componentChangeRate" : 0.0
+                },
+                "vector1" : {
+                    "type" : [
+                        {
+                            "type" : "Boolean"
+                        }
+                    ],
+                    "minLength" : 5,
+                    "maxLength" : 5,
+                    "componentChangeRate" : 0.0
+                },
+                "vector2" : {
+                    "type" : [
+                        {
+                            "type" : "Boolean"
+                        }
+                    ],
+                    "minLength" : 4,
+                    "maxLength" : 4,
+                    "componentChangeRate" : 0.0
+                },
+                "vector3" : {
+                    "type" : [
+                        {
+                            "type" : "Boolean"
+                        }
+                    ],
+                    "minLength" : 3,
+                    "maxLength" : 3,
+                    "componentChangeRate" : 0.0
+                },
+                "vector4" : {
+                    "type" : [
+                        {
+                            "type" : "Boolean"
+                        }
+                    ],
+                    "minLength" : 2,
+                    "maxLength" : 2,
+                    "componentChangeRate" : 0.0
+                },
+                "vector5" : {
+                    "type" : [
+                        {
+                            "type" : "Boolean"
+                        }
+                    ],
+                    "minLength" : 1,
+                    "maxLength" : 1,
+                    "componentChangeRate" : 0.0
+                },
+                "ops" : {
+                    "type" : [
+                        {
+                            "type" : "String",
+                            "choice" : [ "conv1x1-bn-relu", "conv3x3-bn-relu", "maxpool3x3" ]
+                        }
+                    ],
+                    "minLength" : 5,
+                    "maxLength" : 5,
+                    "componentChangeRate" : 0.0
+                }
+            }
+        }
+    },
+    "domain_config": {
+        "domain_name"   : "nas_bench",
+        "fitness"       : "nas_bench_fitness",
+        "evaluator_class_name": "NASBenchCoevaluator"
+    },
+    "evolution": {
+        "nb_generations": 10,
+        "population_size": 20,
+        "nb_elites": 10,
+        "parent_selection": "tournament",
+        "fitness" : [
+            { "metric_name": "score", "maximize": true, "target": 1}
+        ],
+        "remove_population_pct": 0.8,
+        "early_stop" : true,
+        "mutation_probability": 0.1
+    },
+    "LEAF": {
+        "esp_host_official": "v1.esp.evolution.ml",
+        "esp_host": null,
+        "esp_port": 50051,
+        "representation": "Structure",
+        "experiment_id":"nas_bench_test",
+        "reevaluate_elites": false,
+        "distributed" : false,
+        "coevolution" : false,
+        "version": "0.0.1",
+        "persistence_dir": "candidate-solutions/",
+        "candidates_to_persist": "best"
+    },
+    "experiment_config": {
+        "domain": "nas_bench"
+    }
+}

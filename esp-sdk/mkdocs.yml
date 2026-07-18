@@ -1,0 +1,5 @@
+site_name: ESP SDK Documentation
+nav:
+    - Home: index.md
+    - Experiment parameters: params.md
+theme: readthedocs

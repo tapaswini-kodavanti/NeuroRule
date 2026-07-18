@@ -1,0 +1,54 @@
+{
+    "network": {
+        "inputs": [
+            {
+                "name": "input_1",
+                "size": 1,
+                "values": [
+                    "int"
+                ]
+            },
+            {
+                "name": "input_2",
+                "size": 1,
+                "values": [
+                    "int"
+                ]
+            }
+        ],
+        "nb_hidden_units": 16,
+        "use_bias": true,
+        "activation_function": "tanh",
+        "outputs": [
+            {
+                "name": "Output1",
+                "size": 2,
+                "values": [
+                    "True",
+                    "False"
+                ]
+            }
+        ]
+    },
+    "evolution": {
+        "nb_generations": 2,
+        "population_size": 10,
+        "nb_elites": 1,
+        "parent_selection": "proportion",
+        "remove_population_pct": 0.1,
+        "mutation_type": "gaussian_noise_percentage",
+        "mutation_probability": 0.1,
+        "mutation_factor": 0.1,
+        "initialization_distribution": "orthogonal",
+        "initialization_range": 1
+    },
+    "LEAF": {
+        "esp_host": "v3.esp.evolution.ml",
+        "esp_port": 443,
+        "secure": true,
+        "representation": "NNWeights",
+        "reevaluate_elites": false,
+        "version": "0.0.1",
+        "persistence_dir": "trained_agents/"
+    }
+}

@@ -1,0 +1,50 @@
+version: "1.0"
+
+steps:
+
+  clone_repo_and_private_dependencies:
+    title: "Clone target repo and private git dependencies."
+    type: "leaf-ai/private-python-dependency"
+    version: "1.0.3"
+
+  evolution_container:
+    title: "Building Docker image"
+    type: build
+    image_name: evolution/base
+    disable_push: true
+    tag: "${{CF_BRANCH_TAG_NORMALIZED}}"
+    dockerfile: "${{CF_REPO_NAME}}/build_scripts/base/Dockerfile"
+    working_directory: ${{CF_VOLUME_PATH}}
+
+  unit_tests:
+    title: "Run unit tests"
+    image: ${{evolution_container}}
+    commands:
+      - pwd
+      - ls
+      - ls '${{CF_REPO_NAME}}' 
+      - cd '${{CF_REPO_NAME}}' 
+      - cd tests
+      - pytest --verbose --timer-top-n 10 --durations=0 .
+
+  flake8:
+    title: "Run flake8 checks"
+    image: ${{evolution_container}}
+    commands:
+      - pwd
+      - ls
+      - ls '${{CF_REPO_NAME}}' 
+      - pip3 list installed
+      - cd '${{CF_REPO_NAME}}'
+      - ./build_scripts/run_flake8.sh
+
+  pylint:
+    title: "Run pylint"
+    image: ${{evolution_container}}
+    commands:
+      - pwd
+      - ls
+      - ls '${{CF_REPO_NAME}}' 
+      - pip3 list installed
+      - cd '${{CF_REPO_NAME}}'
+      - ./build_scripts/run_pylint.sh

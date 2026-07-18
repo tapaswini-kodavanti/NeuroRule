@@ -1,0 +1,8 @@
+# Defines the characteristics for the "es" Kubernetes namespace
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: es
+  labels:
+    name: es
+    istio-injection: enabled

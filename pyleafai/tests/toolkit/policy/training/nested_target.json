@@ -1,0 +1,15 @@
+{
+    "middle": {
+        "probability": 0.85,
+        "imageSize" : 256,
+        "inner": {
+            "probability" : 0.8637961009809808,
+            "imageSize" : 768,
+            "complete" : false,
+            "color" : "VIOLET",
+            "dropoutRate" : 0.25,
+            "activation" : "sigmoid"
+        }
+    },
+    "complete" : true
+}

@@ -1,0 +1,22 @@
+# To enforce TLS security on V3 service
+apiVersion: authentication.istio.io/v1alpha1
+kind: Policy
+metadata:
+  name: esp-auth-policy
+  namespace: es
+spec:
+  targets:
+  - name: esp
+  peers:
+  - mtls: {}
+  origins:
+  - jwt:
+      issuer: "https://cognizant-ai.auth0.com/"
+      jwksUri: "https://cognizant-ai.auth0.com/.well-known/jwks.json"
+      audiences:
+        - "http://api.cognizant-ai.dev/esp"
+      triggerRules:
+      - excluded_paths:
+          - prefix: "/grpc.reflection.v1alpha.ServerReflection/"
+  principalBinding: USE_ORIGIN
+

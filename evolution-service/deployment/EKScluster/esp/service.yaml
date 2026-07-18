@@ -1,0 +1,15 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: esp
+  namespace: es
+spec:
+  ports:
+  - port: 443
+    name: grpc-exp
+    targetPort: 50051
+    protocol: TCP
+  type: ClusterIP
+  selector:
+    app: esp

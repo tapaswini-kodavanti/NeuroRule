@@ -1,0 +1,8 @@
+commonAnnotations:
+    note: This is the production green environment with V3 of the service
+nameSuffix: -v3.green
+namespace: es
+resources: 
+  - ../../../base
+patchesStrategicMerge:
+  - deployment.yaml

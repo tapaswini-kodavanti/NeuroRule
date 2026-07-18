@@ -1,0 +1,4 @@
+[flake8]
+max-line-length = 120
+exclude = venv,.git,.idea,.ipynb_checkpoints,evolution_server/python/generated,esp_service/grpc/python/generated
+max-complexity = 10

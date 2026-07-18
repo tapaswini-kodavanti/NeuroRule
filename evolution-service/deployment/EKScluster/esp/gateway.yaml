@@ -1,0 +1,27 @@
+# The ingress block is used to route requests using path prefix strings.
+#
+# URL paths for formed in gRPC using '[package].[service]/[method]'. gRPC documentation
+# on the topic can be found at, https://github.com/grpc/grpc/blob/master/doc/PROTOCOL-HTTP2.md
+#
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: esp
+  namespace: es
+  annotations:
+spec:
+  selector:
+    istio: ingressgateway # Default controller name changes from ingressgateway to  ingress from istioctl install to helm install.
+  servers:
+  - port:
+      number: 443
+      name: grpc
+      protocol: HTTPS
+    tls:
+      credentialName: default/esp-tls-credentials
+      minProtocolVersion: TLSV1_2
+      maxProtocolVersion: TLSV1_3
+      mode: SIMPLE
+    hosts:
+    - '*'
+

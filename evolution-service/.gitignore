@@ -1,0 +1,34 @@
+# PyCharm project files
+.idea/
+
+# virtualenv folder
+venv/
+
+# Python byte code
+*.pyc
+
+# Vim editor restore files
+*.swp
+
+# gRPC generated code
+evolution_server/python/generated/
+
+# We want to check in esp_service/grpc generated code so that when we gather up
+# esp_service for library usage, the resulting artifact has everything it needs.
+#esp_service/grpc/python/generated/
+
+# Kubernetes/Istio
+.envrc
+.direnv
+evolution_server/python/esp/kustomization.yaml
+secrets.yaml
+evolution_server/python/esp/versions.yaml
+evolution-service.egg-info/
+docker_config.json
+esp.cognizant-ai.dev
+mtls-go-example
+
+# build files
+dist/
+build/
+*.egg-info/

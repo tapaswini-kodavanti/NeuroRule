@@ -1,0 +1,16 @@
+{
+  "type": {
+    "weight": {
+      "type": "Double",
+      "lowerBound": -1.0,
+      "upperBound": 1.0,
+      "precision": 0.1
+    },
+    "bias": {
+      "type": "Double",
+      "lowerBound": 0.0,
+      "upperBound": 5.0,
+      "precision": 1.0
+    }
+  }
+}

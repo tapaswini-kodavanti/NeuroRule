@@ -1,0 +1,74 @@
+# VirtualService for V3
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: v3-vs
+  namespace: es
+spec:
+  gateways:
+    - default/ingress-gateway
+  hosts:
+    - v3.esp.evolution.ml
+    - esp.evolution.ml
+  http:
+    - match:
+        - headers:
+            service_select:
+              exact: esp.v3.green
+      route:
+        - destination:
+            host: esp
+            subset: green
+    - match:
+        - headers:
+            service_select:
+              exact: esp.v3.blue
+      route:
+        - destination:
+            host: esp
+            subset: blue
+    - match:
+      - headers:
+          service_select:
+            exact: esp.v3
+      route:
+        - destination:
+            host: esp
+            subset: blue
+    - route:
+      - destination:
+          host: esp
+          subset: blue
+---
+# DestinationRule for V3 blue and green
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: esp
+  namespace: es
+spec:
+  host: esp
+  subsets:
+  - name: blue
+    labels:
+      version: v3.blue
+  - name: green
+    labels:
+      version: v3.green
+  trafficPolicy:
+    tls:
+      mode: ISTIO_MUTUAL
+---
+# Kubernetes Service for V3
+apiVersion: v1
+kind: Service
+metadata:
+  name: esp
+  namespace: es
+spec:
+  ports:
+  - port: 50051
+    name: grpc-exp
+    targetPort: 50051
+  selector:
+    app: esp

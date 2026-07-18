@@ -1,0 +1,11 @@
+
+# Copyright (C) 2020-2023 Cognizant Digital Business, Evolutionary AI.
+# All Rights Reserved.
+#
+# This software is proprietary and confidential.
+# Any use, copying, distributing, and modification of this
+# software is only permitted with the express written permission of
+# Cognizant Digital Business and is subject to a proprietary license that is
+# obtained from Cognizant.
+#
+# END COPYRIGHT

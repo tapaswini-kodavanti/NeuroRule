@@ -1,0 +1,1 @@
+These files can be copied to the esp directory level. Found 2 levels above the directory where this file was located.  Once copied they can be them edited and used to perform rolling upgrades as needed.  Your Kustomize file can also be used to store image registry and other forms of secrets that should not be stored within the github repository.

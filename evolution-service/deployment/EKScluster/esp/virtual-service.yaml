@@ -1,0 +1,57 @@
+# URL paths for formed in gRPC using '[package].[service]/[method]'. gRPC documentation
+# on the topic can be found at, https://github.com/grpc/grpc/blob/master/doc/PROTOCOL-HTTP2.md
+#
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: esp
+  namespace: es
+spec:
+  gateways:
+  - esp
+  hosts:
+  - "*"
+  http:
+    - match:
+        - headers:
+            service_select:
+              exact: green
+      route:
+        - destination:
+            host: esp
+            subset: green
+    - match:
+        - headers:
+            service_select:
+              exact: blue
+      route:
+        - destination:
+            host: esp
+            subset: blue
+    - match:
+      - uri:
+          prefix: "/"
+      route:
+      - destination:
+          host: esp
+          subset: blue
+
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: esp
+  namespace: es
+spec:
+  host: esp
+  subsets:
+  - name: blue
+    labels:
+      version: blue
+  - name: green
+    labels:
+      version: green
+  trafficPolicy:
+    tls:
+      # Was ISTIO_MUTUAL, tried Simple and DISABLE
+      mode: ISTIO_MUTUAL

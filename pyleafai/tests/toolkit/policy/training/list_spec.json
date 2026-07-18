@@ -1,0 +1,49 @@
+{
+    "type" : {
+        "arrayOfDoubles" : {
+            "type" : [
+                {
+                    "type" : "Double",
+                    "lowerBound" : 0.0,
+                    "upperBound" : 1.0,
+                    "precision"  : 0.05,
+                    "scale" : "log"
+                }
+            ],
+            "minLength" : 1,
+            "maxLength" : 10,
+            "componentChangeRate" : 0.5
+        },
+        "arrayOfIntegers" : {
+            "type" : [
+                {
+                    "type" : "Integer",
+                    "lowerBound" : 128,
+                    "upperBound" : 1024,
+                    "precision"  : 128,
+                    "scale" : "linear"
+                }
+            ],
+            "minLength" : 2
+        },
+        "arrayOfBooleans" : {
+            "type" : [
+                {
+                    "type" : "Boolean"
+                }
+            ],
+            "minLength" : 3,
+            "componentChangeRate" : 0.5
+        },
+        "arrayOfEnums" : {
+            "type" : [
+                {
+                    "type" : "String",
+                    "choice" : [ "GREEN", "VIOLET" ]
+                }
+            ],
+            "maxLength" : 4
+        }
+    },
+    "fieldChangeRate" : 0.5
+}

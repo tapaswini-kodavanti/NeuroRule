@@ -1,0 +1,81 @@
+version: '1.0'
+services:
+  name: my_esp_service
+  composition: esp-service
+steps:
+
+  create_aws_profile:	
+      title: "Create AWS Profile"	
+      image: sentient-docker.jfrog.io/python:3.8-slim
+      commands:	
+        - pip3 install -q awscli --cache-dir=${{CF_VOLUME_PATH}}/pip-cache	
+        - |	
+          cat << EOF > ${{CF_VOLUME_PATH}}/credentials	
+          [login]	
+          aws_access_key_id = ${AWS_ACCESS_KEY_ID}	
+          aws_secret_access_key = ${AWS_SECRET_ACCESS_KEY}	
+          [platprod]	
+          role_arn = arn:aws:iam::634208487213:role/LeafCI	
+          source_profile = login	
+          EOF
+
+  determine_latest_esp_rl_image:
+      title: "Determine latest esp-rl Docker image"
+      image: sentient-docker.jfrog.io/python:3.8-slim
+      commands:
+        - cat ${{CF_VOLUME_PATH}}/env_vars_to_export
+        - mkdir -p ~/.aws
+        - cp ${{CF_VOLUME_PATH}}/credentials ~/.aws/
+        - pip3 install -q awscli --cache-dir=${{CF_VOLUME_PATH}}/pip-cache
+        - >
+          cf_export HIGH_VER_IMAGETAG=$(
+          aws ecr describe-images
+          --profile platprod
+          --repository-name 'esp/esp-rl'
+          --region 'us-west-2'
+          --query 'sort_by(imageDetails,& imagePushedAt)[-1].imageTags[0]'
+          --output text
+          --no-paginate
+          )
+          
+  print_versions:
+      title: "Print the versions of dependent repos"
+      image: 634208487213.dkr.ecr.us-west-2.amazonaws.com/esp/esp-rl:${{HIGH_VER_IMAGETAG}}
+      registry: prod_uswest2
+      working_directory: /usr/local/cognizant/esp-rl
+      commands:
+        - echo "Testing using esp-rl image version $HIGH_VER_IMAGETAG"
+        - echo "Using evolution-service @ $CF_REVISION"
+        - pip3 freeze --cache-dir=${{CF_VOLUME_PATH}}/pip-cache | grep esp-sdk
+        - pip3 freeze --cache-dir=${{CF_VOLUME_PATH}}/pip-cache | grep leaf-common
+        
+  integration_test:
+    services:
+      - my_esp_service
+    image: 634208487213.dkr.ecr.us-west-2.amazonaws.com/esp/esp-rl:${{HIGH_VER_IMAGETAG}}
+    working_directory: /usr/local/cognizant/esp-rl
+    local-volume: True
+    environment:
+      - TEST_CMD=pytest --verbose 
+        -m integration 
+        --tc=secure:False 
+        --tc=esp_host:esp-service 
+        --tc=experiment_params_file:${{EXPERIMENT_PARAMS_BASE}}
+                      
+    commands:
+      # Note: We need to remove leaf-common tests that appear so that their
+      #       presence does not interfere with this repo's own tests imports.
+      #       XXX Really, we should modernize this whole yaml file and get
+      #           private dependencies in using ephemeral github creds among
+      #           other things
+      - rm -rf leaf-common/test
+      - ${TEST_CMD}flappy_esp.hocon
+      - ${TEST_CMD}acrobot_esp.hocon
+      - ${TEST_CMD}cartpole_esp.hocon
+      - ${TEST_CMD}lunarlander_esp.hocon
+      - ${TEST_CMD}cartpole_rb_esp.hocon
+      - ${TEST_CMD}flappy_esp.hocon
+      - ${TEST_CMD}acrobot_de.hocon
+      - ${TEST_CMD}cartpole_de.hocon
+      - ${TEST_CMD}lunarlander_de.hocon
+      - ${TEST_CMD}cartpole_rb_de.hocon

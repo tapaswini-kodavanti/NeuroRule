@@ -1,0 +1,15 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: esp
+spec:
+  replicas: 1
+  template:
+    metadata:
+      namespace: es
+      labels:
+        version: v3.green
+    spec:
+      containers:
+      - name: esp
+        image: leaf/esp-service:latest

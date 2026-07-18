@@ -1,0 +1,9 @@
+resources:
+  - ../../infrastructure
+  - blue
+  - green
+  - v3.blue
+  - v3.green
+patchesStrategicMerge:
+  - versions.yaml
+  - versions_v3.yaml

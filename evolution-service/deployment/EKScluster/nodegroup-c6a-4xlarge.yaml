@@ -1,0 +1,34 @@
+---
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+
+metadata:
+  name: esp
+  region: us-west-2
+
+managedNodeGroups:
+  - name: c6a-4xlarge
+    ssh: # use existing EC2 key
+      allow: false
+      publicKeyName: eks-clusters
+    desiredCapacity: 1
+    minSize: 1
+    maxSize: 6
+    volumeSize: 30
+    # Only using two availability zones/subnets as we have to allocate an EIP to each one.
+    availabilityZones: ["us-west-2b", "us-west-2c"]
+    instanceType: "c6a.4xlarge"
+    labels:
+      app: esp
+      lifecycle: onDemand
+      aws.amazon.com/spot: "false"
+    iam:
+      attachPolicyARNs:
+        - arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy
+        - arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy
+        - arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly
+        - arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore
+        - arn:aws:iam::aws:policy/AmazonS3FullAccess
+      withAddonPolicies:
+        autoScaler: true
+        cloudWatch: true

@@ -1,0 +1,64 @@
+{
+    "representation_config": {
+        "structure_spec": {
+            "type": {
+                "vector" : {
+                    "type" : [
+                        {
+                            "type" : "Boolean"
+                        }
+                    ],
+                    "minLength" : 21,
+                    "maxLength" : 21,
+                    "componentChangeRate" : 0.5
+                },
+                "ops" : {
+                    "type" : [
+                        {
+                            "type" : "String",
+                            "choice" : [ "conv1x1-bn-relu", "conv3x3-bn-relu", "maxpool3x3" ]
+                        }
+                    ],
+                    "minLength" : 5,
+                    "maxLength" : 5,
+                    "componentChangeRate" : 1.0
+                }
+            }
+        }
+    },
+    "domain_config": {
+        "domain_name"   : "nas_bench",
+        "fitness"       : "nas_bench_fitness",
+        "evaluator_class_name": "NASBenchCoevaluator"
+    },
+    "evolution": {
+        "nb_generations": 5000,
+        "population_size": 100,
+        "nb_elites": 10,
+        "parent_selection": "tournament",
+        "fitness" : [
+            { "metric_name": "score", "maximize": true, "target": 1}
+        ],
+        "remove_population_pct": 0.8,
+        "early_stop" : true,
+        "novelty_selection_multiplier" : 1,
+        "novelty_pulsation_cycle" : 1,
+        "mutation_probability": 0.1
+    },
+    "LEAF": {
+        "esp_host_official": "v1.esp.evolution.ml",
+        "esp_host": "localhost",
+        "esp_port": 50051,
+        "representation": "Structure",
+        "experiment_id":"nas_bench_test",
+        "reevaluate_elites": false,
+        "distributed" : false,
+        "coevolution" : false,
+        "version": "0.0.1",
+        "persistence_dir": "candidate-solutions/",
+        "candidates_to_persist": "best"
+    },
+    "experiment_config": {
+        "domain": "nas_bench"
+    }
+}

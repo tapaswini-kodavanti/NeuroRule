@@ -1,0 +1,159 @@
+
+// Copyright (C) 2019-2023 Cognizant Digital Business, Evolutionary AI.
+// All Rights Reserved.
+// Issued under the Academic Public License.
+//
+// You can be released from the terms, and requirements of the Academic Public
+// License by purchasing a commercial license.
+// Purchase of a commercial license is mandatory for any use of the
+// esp-service Software in commercial settings.
+//
+// END COPYRIGHT
+syntax = "proto3";
+
+package population;
+
+// Note: lifted from https://github.com/leaf-ai/deepbilevel/tree/master/servicecommon/service/protos
+// At some point we will reconcile with ENN/LEAF but for now these are copy-pasted.
+
+//
+// Request Messages for a PopulationService (see population_service.proto)
+//
+
+message PopulationRequest {
+
+    // Request version string for potentially routing to different
+    // implementations of the same service
+    string version = 1;
+
+    // A unique (enough) experiment identifier so that one experiment
+    // can be distinguished from another.  The semantics of this uniqueness
+    // is left to the implementation.
+    string experiment_id = 2;
+
+    // An optional bytes describing the single implementation-specific
+    // configuration for the population service.
+    // Often this is JSON, but the format is implementation specific.
+    // 
+    // To what extent configuration is allowed to change between different
+    // generations/checkpoints is left as an implementation detail.
+    // Often, unspecified configuration implies no change to the config,
+    // however configuration *must* be included at least when creating an
+    // initial generation.
+    bytes config = 3;
+
+    // The optional population response structure containing the population
+    // for which the next population will be based.
+    //
+    // If this is omitted, then it is implied that a new population, randomly
+    // created from scratch (initial generation), is desired.
+    //
+    // If this is included, then the population included is assumed to be
+    // evaluated to the fullest extent possible with each candidates'
+    // metrics values filled in, and these metrics values influence which
+    // candidates are picked to influence the creation of the next generation.
+    //
+    // If a checkpoint_id is included in this PopulationResponse, it is assumed
+    // that the incoming evaluated population was created with service-internal
+    // state associated with that checkpoint id.  If a checkpoint_id is not
+    // included, the service is allowed to assume that it has no internal
+    // history of the given population, and that the population is to be used
+    // as seed material with no prior internal history for the creation of
+    // an initial generation.
+    PopulationResponse evaluated_population_response = 4;
+}
+
+
+message ExistingPopulationRequest {
+
+    // Request version string for potentially routing to different
+    // implementations of the same service
+    string version = 1;
+
+    // A unique (enough) experiment identifier so that one experiment
+    // can be distinguished from another.  The semantics of this uniqueness
+    // is left to the implementation.
+    string experiment_id = 2;
+
+    // String hash of some kind for the checkpoint desired that was obtained
+    // from a previous PopulationResponse.
+    string checkpoint_id = 3;
+}
+
+
+//
+// Response Messages for a PopulationService (see population_service.proto)
+//
+
+
+// Message describing a single candidate
+message Candidate {
+
+    // String identifier of the candidate.
+    // This is unique to the experiment at least.
+    // Going further on the scope of uniqueness is an implementation choice.
+    string id = 1;
+
+    // Interpretation is representation and service implementation specific.
+    // Often the interpretation itself is a JSON string due to its
+    // extensibility with minimal semantic impact, with interpreters for
+    // many languages.
+    bytes interpretation = 2;
+
+    // Metrics is a dictionary in a single set of byts that contains evaluation
+    // measurements about the candidate.
+    // Often this is JSON, but the format is implementation specific.
+    //
+    // Candidates that are created by the service and handed to the
+    // Experiment Host are usually created with no metrics populated.
+    // Metrics may or may not be populated with previously obtained
+    // evaluation data when a candidate that has been seen before is
+    // re-delivered by the service.  (This is up to the semantics of
+    // the service implementation).
+    //
+    // Upon returning a candidate to the service, any evaluated candidate
+    // should have its metrics structure populated to the best of the
+    // Experiment Host's ability.  It is not an error to report no metrics
+    // for any single candidate, as candidates with no metrics are discarded
+    // during selection, however not reporting any metrics for all candidates
+    // is an error on the Experiment Host's side.
+    //
+    // If there is more than one metric field reported, usually the experiment
+    // configuration information gives an indication as to which field(s)
+    // are to indicate fitness values for evolution.
+    bytes metrics = 3;
+
+    // Optional Identity is a somewhat amorphous dictionary in a set of bytes
+    // describing the birth circumstances of the particular candidate.
+    // Often this is JSON, but the format is implementation specific.
+    //
+    // There are service implementations where much richer identity information
+    // is desirable, but this information is not strictly required to fulfill
+    // the interface.
+    bytes identity = 4;
+}
+
+
+// A message describing a population
+message PopulationResponse {
+
+    // A list of Candidates to be evaluated, or that were just evaluated.
+    repeated Candidate population = 1;
+
+    // An integer representing the iteration number of the population,
+    // or generation count.
+    int32 generation_count = 2;
+
+    // A string hash representing a single checkpoint id.
+    // This is optional when requesting a new population from scratch
+    // (generation 0). 
+    string checkpoint_id = 3;
+
+    // Optional representation and/or domain specific data to be stored
+    // with the checkpoint so that population at a specific checkpoint
+    // can be associated with accumulated stats by the Experiment Host.
+    // This data is considered to be opaque pass-through data to the service
+    // as a convenience for Experiment Hosts to pick up where they left off
+    // after an interruption of their own process.
+    bytes evaluation_stats = 4;
+}

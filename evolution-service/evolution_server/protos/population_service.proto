@@ -1,0 +1,50 @@
+
+// Copyright (C) 2019-2023 Cognizant Digital Business, Evolutionary AI.
+// All Rights Reserved.
+// Issued under the Academic Public License.
+//
+// You can be released from the terms, and requirements of the Academic Public
+// License by purchasing a commercial license.
+// Purchase of a commercial license is mandatory for any use of the
+// esp-service Software in commercial settings.
+//
+// END COPYRIGHT
+syntax = "proto3";
+
+package population;
+
+import "population_structs.proto";
+
+// Note: lifted from https://github.com/leaf-ai/deepbilevel/tree/master/servicecommon/service/protos
+// At some point we will reconcile with ENN/LEAF but for now these are copy-pasted.
+
+//
+// The service definition for a generic population server.
+//
+// If creating a population can take longer than 30-45 seconds,
+// Some implementations of a population service might require an
+// implementation of a Submission service also with the same API.
+//
+// The Submission Service has the same interface as the underlying
+// Population Service.  It will call the underlying Population Service
+// to ask it to create a population, but since this can take awhile,
+// this service returns early with information as to how further updates can
+// be obtained via subsequent GetPopulation() calls: an "Is it there yet?" poll.
+// This allows the long (> 1 min) idle sockets to close with service work
+// still proceeding.
+//
+// Even though the Submission Service has the same interface as the
+// Population Service itself, you would need to define a separate service
+// for it so requests can be routed differently within the service cluster.
+//
+service PopulationService {
+
+    // Returns an initial or new generation specification
+    rpc NextPopulation (population.PopulationRequest) returns (population.PopulationResponse) {
+    }
+
+    // Returns an existing population of the experiment
+    rpc GetPopulation (population.ExistingPopulationRequest) returns (population.PopulationResponse) {
+    }
+}
+

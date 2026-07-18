@@ -1,0 +1,39 @@
+
+# leaf-common is a contributing library to Cognizant
+# ENN and ESP products, but is not considered an endpoint of
+# consumption.  To that end we do not want to dictate which
+# transient dependency versions go into the shipping library
+# if we can help it.
+#
+# The dependencies listed here are those required by the library
+# code itself, *not* for building the library.
+#
+# As this is a low-level library included by many projects we
+# specifically do *not* want heavy dependencies that drag in lots
+# of other transient dependencies in this library (think: Keras).
+# The intent is not to bloat the delivery infrastructure
+# (builds, containers, etc) of client code that does not need
+# all the other transient dependencies.
+#
+# Any dependencies added here must also be listed in setup.py.
+# ... But theoretically leaf-common should not depend on anything.
+#       ... or at least very little.
+
+# For secure communications with LEAF Services
+grpcio>=1.48.2
+pyOpenSSL>=23.1.1
+PyJWT>=2.9.0
+cryptography>=42.0.8
+
+# For vault access
+hvac>=1.1.0
+
+# For time_util stuff
+pytz>=2022.7.1
+
+# For serialization
+ruamel.yaml>=0.17.21
+pyhocon>=0.3.60
+
+# For deprecated decorator use
+Deprecated>=1.2.13

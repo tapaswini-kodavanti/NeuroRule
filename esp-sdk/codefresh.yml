@@ -1,0 +1,178 @@
+version: '1.0'
+steps:
+  clone-repo:
+    type: git-clone
+    title: "Clone ${{CF_REPO_NAME}} repo"
+    repo: "${{CF_REPO_OWNER}}/${{CF_REPO_NAME}}"
+    git: github
+    revision: "${{CF_REVISION}}"
+  
+  # Use image name to push/pull from our ecr.
+  # This image name is the ecr repository name
+  # for which we can control important variables such as
+  # lifecycle policy. The tag for default case will be 
+  # the git SHA. Non-master builds go to the junk repo
+  # called 'intermediate'. 
+  set_variables:
+    title: "Setup default variables"
+    image: alpine:3.15.0
+    commands:
+      - export IMG_NAME=intermediate
+      - export TAG=${{CF_REVISION}}
+      - cf_export IMG_NAME
+      - cf_export TAG
+      # set the wheel package name which is the
+      # the repo name, but with underscores instead of dashes
+      - cf_export PACKAGE_NAME=`echo ${{CF_REPO_NAME}} | sed s/-/_/`
+      # set up other needed variables
+      - cf_export APP_HOME=/home/${{CF_REPO_OWNER}}
+      - cf_export APP_SOURCE=${APP_HOME}/${{CF_REPO_NAME}}
+
+  # When codefresh sets the CF_RELEASE_TAG, this task will run
+  # and switch the push variables to their production values.
+  # The resulting container is pushed to the production
+  # repo in ecr (with immutable tagging to prevent overwrite).
+  set_push_variables_release:
+    title: "Change variables for release build"
+    image: alpine:3.15.0
+    commands:
+      - export IMG_NAME=esp/esp-sdk
+      - export TAG=${{CF_RELEASE_TAG}}
+      - cf_export IMG_NAME
+      - cf_export TAG
+    when:
+      condition:
+        all:
+          # This is idiomatic Codefresh for detecting if ${{CF_RELEASE_TAG}} has a value. We only want to deploy
+          # on Github release triggers, and this variable gets populated only for Github releases.
+          deploy_tagged_builds_only: 'includes("${{CF_RELEASE_TAG}}", "{{CF_RELEASE_TAG}}") == false'
+
+  create_temp_git_creds_from_vault:
+    title: "Get ephemeral GitHub creds"
+    description: "Get temporary git credentials from vault server.
+                  Create credential for use in docker secret with_creds_requirements"
+    type: "freestyle"
+    image: "vault:1.12.0"
+    working_directory: ${{CF_VOLUME_PATH}}/${{CF_REPO_NAME}}
+
+    # Disable all caching for this step to ensure the requirements file
+    # is always up to date. This step is very quick so the time hit
+    # is minimal.
+    # disable docker local cache
+    no_cache: true
+    # disable codefresh additional caching mechanisms
+    no_cf_cache: true
+
+    commands:
+      # Specifically use a temp directory outside the container we want to build
+      # so as not to accidentally copy sensitive credentials inside of it.
+      - export TEMP_DIR_OUTSIDE_CONTAINER=${{CF_VOLUME_PATH}}/tmp/${{CF_BUILD_ID}}
+      - mkdir -p ${TEMP_DIR_OUTSIDE_CONTAINER}
+      - export WITH_CREDS_REQUIREMENTS=${TEMP_DIR_OUTSIDE_CONTAINER}/with_creds_requirements.txt
+      - cp requirements.txt ${WITH_CREDS_REQUIREMENTS}
+      - cf_export WITH_CREDS_REQUIREMENTS
+
+      # Login to Vault only once
+      - >-
+          vault login -address=${{VAULT}} -method=github token=${{VAULT_LOGIN}}
+          | grep -Ev "(token |token_accessor)"
+
+      # Get the ephemeral token for public repos
+      - EPHEMERAL_TOKEN=$(vault read -address=${{VAULT}} -field=token /github-secrets/token/repo-read)
+      - EPHEMERAL_LEAF_SOURCE_CREDENTIALS="x-access-token:${EPHEMERAL_TOKEN}"
+      - >-
+          sed -i "s/\${LEAF_SOURCE_CREDENTIALS}/${EPHEMERAL_LEAF_SOURCE_CREDENTIALS}/g"
+          ${WITH_CREDS_REQUIREMENTS}
+
+      # Get the ephemeral token for private repos
+      - EPHEMERAL_TOKEN=$(vault read -address=${{VAULT}} -field=token /github-private-secrets/token/repo-read)
+      - EPHEMERAL_LEAF_SOURCE_CREDENTIALS="x-access-token:${EPHEMERAL_TOKEN}"
+      - >-
+          sed -i "s/\${LEAF_PRIVATE_SOURCE_CREDENTIALS}/${EPHEMERAL_LEAF_SOURCE_CREDENTIALS}/g"
+          ${WITH_CREDS_REQUIREMENTS}
+
+  esp_sdk_build:
+    title: Build esp-sdk Docker image
+    image_name: ${{IMG_NAME}}
+    type: build
+    dockerfile: ./Dockerfile
+    working_directory: ${{CF_REPO_NAME}}
+    tag: ${{TAG}}
+    buildkit: true
+    # Docker BuildKit has different output. This progress plain allows
+    # us to see the "old" style output which is useful.
+    progress: "plain"
+    # The src refers to our secret file on the host system. Within the
+    # dockerfile we refer to the secret by id. By not providing a dst
+    # the file ends up at the docker default of /run/secrets/<id>
+    secrets:
+      - id=with_creds_requirements,src=${{WITH_CREDS_REQUIREMENTS}}
+    build_arguments:
+      - REPO=${{CF_REPO_NAME}}
+      - USERNAME=${{CF_REPO_OWNER}}
+      - APP_HOME=${{APP_HOME}}
+      - APP_SOURCE=${{APP_SOURCE}}
+
+  run_all_tests:
+    type: parallel
+    fail_fast: false
+    steps:
+      static_checks:
+        title: Run static checks
+        image: ${{esp_sdk_build}}
+        description: Run static analysis (Pylint and Flake8)
+        working_directory: ${{CF_REPO_NAME}}
+        fail_fast: false
+        commands:
+          - flake8 .
+          - scripts/run_pylint.sh
+
+      unit_tests:
+        title: Run unit tests
+        image: ${{esp_sdk_build}}
+        description: Run unit tests (pytests)
+        working_directory: ${{CF_REPO_NAME}}
+        commands:
+          - pytest --verbose -m "not integration" --timer-top-n 10
+
+  all_test_status:
+    title: Check For Failed Tests
+    description: "Handle any fail cases that may have occurred"
+    image: alpine:3.13.1
+    commands:
+      - exit 1
+    when:
+      condition:
+        any:
+          static_test_fail:
+            steps.static_checks.result == "failure" ||
+            steps.unit_tests.result == "failure"
+
+  build_wheel:
+    title: Build wheel file
+    image: ${{esp_sdk_build}}
+    shell: bash
+    description: Build wheel file for distribution
+    working_directory: ${{CF_REPO_NAME}}
+    commands:
+      - pip install build wheel
+      - python -m build --wheel
+      - mkdir -p ${{CF_VOLUME_PATH}}/${{CF_BUILD_ID}}
+      - cd dist && mv ${PACKAGE_NAME}*.whl ${{CF_VOLUME_PATH}}/${{CF_BUILD_ID}}
+
+  upload_to_S3:
+    title: Upload Wheel to S3
+    # doc for aws-s3 step https://codefresh.io/steps/step/aws-s3
+    type: aws-s3
+    arguments:
+      REGION: us-west-2
+      BUCKET: ${{UNILEAF_WHEEL_BUCKET}}
+      S3_INTEGRATION: amazon
+      S3_PREFIX: ${{PACKAGE_NAME}}/
+      SOURCE: ${{CF_VOLUME_PATH}}/${{CF_BUILD_ID}}
+    when:
+      condition:
+        all:
+          # This is idiomatic Codefresh for detecting if ${{CF_RELEASE_TAG}} has a value. We only want to deploy
+          # on Github release triggers, and this variable gets populated only for Github releases.
+          deploy_tagged_builds_only: 'includes("${{CF_RELEASE_TAG}}", "{{CF_RELEASE_TAG}}") == false'

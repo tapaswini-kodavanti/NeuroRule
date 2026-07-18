@@ -1,0 +1,59 @@
+{
+    "type": {
+        "middle": {
+            "type": {
+                "probability": {
+                    "type": "Double",
+                    "lowerBound": 0.0,
+                    "upperBound": 1.0,
+                    "precision": 0.05
+                },
+                "imageSize" : {
+                    "type": "Integer",
+                    "lowerBound": 128,
+                    "upperBound": 1024,
+                    "precision": 128
+                },
+                "inner": {
+                    "type" : {
+                        "probability" : {
+                            "type" : "Double",
+                            "lowerBound" : 0.0,
+                            "upperBound" : 1.0,
+                            "precision"  : 0.05,
+                            "scale" : "log"
+                        },
+                        "imageSize" : {
+                            "type" : "Integer",
+                            "lowerBound" : 128,
+                            "upperBound" : 1024,
+                            "precision"  : 128,
+                            "scale" : "linear"
+                        },
+                        "complete" : {
+                            "type" : "Boolean"
+                        },
+                        "color" : {
+                            "type" : "String",
+                            "choice" : [ "GREEN", "VIOLET" ]
+                        },
+                        "dropoutRate" : {
+                            "type" : "Double",
+                            "choice" : [ 0.0, 0.25, 0.50, 0.75, 1.0 ]
+                        },
+                        "activation" : {
+                            "type" : "String",
+                            "choice" : [ "relu", "sigmoid" ]
+                        }
+                    },
+                    "fieldChangeRate" : 0.5
+                }
+            },
+            "fieldChangeRate": 0.6
+        },
+        "complete" : {
+            "type": "Boolean"
+        }
+    },
+    "fieldChangeRate": 0.3
+}

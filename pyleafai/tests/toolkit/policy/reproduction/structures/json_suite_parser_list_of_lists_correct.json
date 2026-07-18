@@ -1,0 +1,24 @@
+{
+    "type" : {
+        "arrayOfArrays" : {
+            "type" : [
+                {
+                    "type" : [
+                        {
+                            "type" : "Double",
+                            "lowerBound" : 0.0,
+                            "upperBound" : 1.0,
+                            "precision"  : 0.25
+                        }
+                    ],
+                    "maxLength" : 4,
+                    "componentChangeRate" : 0.3
+                }
+            ],
+            "minLength" : 1,
+            "maxLength" : 10,
+            "componentChangeRate" : 0.5
+        }
+    },
+    "fieldChangeRate" : 0.5
+}

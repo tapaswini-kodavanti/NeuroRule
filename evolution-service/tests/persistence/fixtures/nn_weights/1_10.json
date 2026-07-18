@@ -1,0 +1,473 @@
+{
+    "model_config": {
+        "name": "model_1",
+        "layers": [
+            {
+                "name": "input1_input",
+                "class_name": "InputLayer",
+                "config": {
+                    "batch_input_shape": [
+                        null,
+                        5
+                    ],
+                    "dtype": "float32",
+                    "sparse": false,
+                    "name": "input1_input"
+                },
+                "inbound_nodes": []
+            },
+            {
+                "name": "input2_input",
+                "class_name": "InputLayer",
+                "config": {
+                    "batch_input_shape": [
+                        null,
+                        7
+                    ],
+                    "dtype": "float32",
+                    "sparse": false,
+                    "name": "input2_input"
+                },
+                "inbound_nodes": []
+            },
+            {
+                "name": "input1",
+                "class_name": "Dense",
+                "config": {
+                    "name": "input1",
+                    "trainable": true,
+                    "units": 4,
+                    "activation": "linear",
+                    "use_bias": true,
+                    "kernel_initializer": {
+                        "class_name": "VarianceScaling",
+                        "config": {
+                            "scale": 1.0,
+                            "mode": "fan_avg",
+                            "distribution": "uniform",
+                            "seed": null
+                        }
+                    },
+                    "bias_initializer": {
+                        "class_name": "Zeros",
+                        "config": {}
+                    },
+                    "kernel_regularizer": null,
+                    "bias_regularizer": null,
+                    "activity_regularizer": null,
+                    "kernel_constraint": null,
+                    "bias_constraint": null
+                },
+                "inbound_nodes": [
+                    [
+                        [
+                            "input1_input",
+                            0,
+                            0,
+                            {}
+                        ]
+                    ]
+                ]
+            },
+            {
+                "name": "input2",
+                "class_name": "Dense",
+                "config": {
+                    "name": "input2",
+                    "trainable": true,
+                    "units": 4,
+                    "activation": "linear",
+                    "use_bias": true,
+                    "kernel_initializer": {
+                        "class_name": "VarianceScaling",
+                        "config": {
+                            "scale": 1.0,
+                            "mode": "fan_avg",
+                            "distribution": "uniform",
+                            "seed": null
+                        }
+                    },
+                    "bias_initializer": {
+                        "class_name": "Zeros",
+                        "config": {}
+                    },
+                    "kernel_regularizer": null,
+                    "bias_regularizer": null,
+                    "activity_regularizer": null,
+                    "kernel_constraint": null,
+                    "bias_constraint": null
+                },
+                "inbound_nodes": [
+                    [
+                        [
+                            "input2_input",
+                            0,
+                            0,
+                            {}
+                        ]
+                    ]
+                ]
+            },
+            {
+                "name": "add_1",
+                "class_name": "Add",
+                "config": {
+                    "name": "add_1",
+                    "trainable": true
+                },
+                "inbound_nodes": [
+                    [
+                        [
+                            "input1",
+                            0,
+                            0,
+                            {}
+                        ],
+                        [
+                            "input2",
+                            0,
+                            0,
+                            {}
+                        ]
+                    ]
+                ]
+            },
+            {
+                "name": "activation_1",
+                "class_name": "Activation",
+                "config": {
+                    "name": "activation_1",
+                    "trainable": true,
+                    "activation": "sigmoid"
+                },
+                "inbound_nodes": [
+                    [
+                        [
+                            "add_1",
+                            0,
+                            0,
+                            {}
+                        ]
+                    ]
+                ]
+            },
+            {
+                "name": "output1",
+                "class_name": "Dense",
+                "config": {
+                    "name": "output1",
+                    "trainable": true,
+                    "units": 3,
+                    "activation": "sigmoid",
+                    "use_bias": true,
+                    "kernel_initializer": {
+                        "class_name": "VarianceScaling",
+                        "config": {
+                            "scale": 1.0,
+                            "mode": "fan_avg",
+                            "distribution": "uniform",
+                            "seed": null
+                        }
+                    },
+                    "bias_initializer": {
+                        "class_name": "Zeros",
+                        "config": {}
+                    },
+                    "kernel_regularizer": null,
+                    "bias_regularizer": null,
+                    "activity_regularizer": null,
+                    "kernel_constraint": null,
+                    "bias_constraint": null
+                },
+                "inbound_nodes": [
+                    [
+                        [
+                            "activation_1",
+                            0,
+                            0,
+                            {}
+                        ]
+                    ]
+                ]
+            },
+            {
+                "name": "output2",
+                "class_name": "Dense",
+                "config": {
+                    "name": "output2",
+                    "trainable": true,
+                    "units": 4,
+                    "activation": "sigmoid",
+                    "use_bias": true,
+                    "kernel_initializer": {
+                        "class_name": "VarianceScaling",
+                        "config": {
+                            "scale": 1.0,
+                            "mode": "fan_avg",
+                            "distribution": "uniform",
+                            "seed": null
+                        }
+                    },
+                    "bias_initializer": {
+                        "class_name": "Zeros",
+                        "config": {}
+                    },
+                    "kernel_regularizer": null,
+                    "bias_regularizer": null,
+                    "activity_regularizer": null,
+                    "kernel_constraint": null,
+                    "bias_constraint": null
+                },
+                "inbound_nodes": [
+                    [
+                        [
+                            "activation_1",
+                            0,
+                            0,
+                            {}
+                        ]
+                    ]
+                ]
+            },
+            {
+                "name": "lambda_1",
+                "class_name": "Lambda",
+                "config": {
+                    "name": "lambda_1",
+                    "trainable": true,
+                    "function": [
+                        "4wEAAAAAAAAAAQAAAAUAAABTAAAAcyAAAAB0AGoBdABqAnwAZAFkAo0CdABqA3wAgwFkARkAgwJT\nACkDTukBAAAAKQHaBGF4aXMpBNoBS9oHb25lX2hvdNoGYXJnbWF42glpbnRfc2hhcGUpAdoBeKkA\ncggAAAD6WC9ob21lL2RhcnJlbi5zYXJnZW50L3NyYy9jb2duaXphbnQvcGxhdGZvcm0vYXNjZW5k\nLWF1dG9zZWcvYXNjZW5kYXV0b3NlZy9jcmVhdGVfbW9kZWwucHnaCDxsYW1iZGE+SwAAAHMCAAAA\nEAE=\n",
+                        null,
+                        null
+                    ],
+                    "function_type": "lambda",
+                    "output_shape": [
+                        3
+                    ],
+                    "output_shape_type": "raw",
+                    "arguments": {}
+                },
+                "inbound_nodes": [
+                    [
+                        [
+                            "output1",
+                            0,
+                            0,
+                            {}
+                        ]
+                    ]
+                ]
+            },
+            {
+                "name": "lambda_2",
+                "class_name": "Lambda",
+                "config": {
+                    "name": "lambda_2",
+                    "trainable": true,
+                    "function": [
+                        "4wEAAAAAAAAAAQAAAAUAAABTAAAAcyAAAAB0AGoBdABqAnwAZAFkAo0CdABqA3wAgwFkARkAgwJT\nACkDTukBAAAAKQHaBGF4aXMpBNoBS9oHb25lX2hvdNoGYXJnbWF42glpbnRfc2hhcGUpAdoBeKkA\ncggAAAD6WC9ob21lL2RhcnJlbi5zYXJnZW50L3NyYy9jb2duaXphbnQvcGxhdGZvcm0vYXNjZW5k\nLWF1dG9zZWcvYXNjZW5kYXV0b3NlZy9jcmVhdGVfbW9kZWwucHnaCDxsYW1iZGE+SwAAAHMCAAAA\nEAE=\n",
+                        null,
+                        null
+                    ],
+                    "function_type": "lambda",
+                    "output_shape": [
+                        4
+                    ],
+                    "output_shape_type": "raw",
+                    "arguments": {}
+                },
+                "inbound_nodes": [
+                    [
+                        [
+                            "output2",
+                            0,
+                            0,
+                            {}
+                        ]
+                    ]
+                ]
+            }
+        ],
+        "input_layers": [
+            [
+                "input1_input",
+                0,
+                0
+            ],
+            [
+                "input2_input",
+                0,
+                0
+            ]
+        ],
+        "output_layers": [
+            [
+                "lambda_1",
+                0,
+                0
+            ],
+            [
+                "lambda_2",
+                0,
+                0
+            ]
+        ]
+    },
+    "model_weights": {
+        "input1": [
+            [
+                [
+                    -0.2466105818748474,
+                    -0.383719265460968,
+                    0.4940268099308014,
+                    -0.10800310224294662
+                ],
+                [
+                    0.25347238779067993,
+                    -0.3433734178543091,
+                    0.7257317900657654,
+                    -0.36981502175331116
+                ],
+                [
+                    0.04336170479655266,
+                    0.1775602549314499,
+                    -0.25123146176338196,
+                    0.24374093115329742
+                ],
+                [
+                    0.31974533200263977,
+                    -0.17026516795158386,
+                    0.42726844549179077,
+                    0.12978288531303406
+                ],
+                [
+                    -0.5124577283859253,
+                    -0.21744436025619507,
+                    0.07971234619617462,
+                    0.6871206760406494
+                ]
+            ],
+            [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ]
+        ],
+        "input2": [
+            [
+                [
+                    -0.2756888270378113,
+                    -0.5536701083183289,
+                    0.6821810007095337,
+                    -0.5303291082382202
+                ],
+                [
+                    0.5411356091499329,
+                    0.09721920639276505,
+                    0.23301176726818085,
+                    -0.2243867814540863
+                ],
+                [
+                    0.5330339074134827,
+                    -0.7073919773101807,
+                    0.16956833004951477,
+                    0.3400052785873413
+                ],
+                [
+                    0.03192311152815819,
+                    -0.17394191026687622,
+                    0.382606565952301,
+                    -0.35412588715553284
+                ],
+                [
+                    -0.31334277987480164,
+                    -0.43474146723747253,
+                    -0.28346550464630127,
+                    -0.05028380826115608
+                ],
+                [
+                    -0.6456416845321655,
+                    0.6708182096481323,
+                    -0.46257859468460083,
+                    0.3614293932914734
+                ],
+                [
+                    0.6005573272705078,
+                    -0.3564149737358093,
+                    0.09494640678167343,
+                    -0.05038822442293167
+                ]
+            ],
+            [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ]
+        ],
+        "output1": [
+            [
+                [
+                    0.17657481133937836,
+                    -0.3583214282989502,
+                    -0.09196442365646362
+                ],
+                [
+                    -0.35012054443359375,
+                    0.5546634793281555,
+                    -0.8146783113479614
+                ],
+                [
+                    -0.4235887825489044,
+                    -0.3459632098674774,
+                    0.6771558523178101
+                ],
+                [
+                    0.7649879455566406,
+                    -0.3439825773239136,
+                    0.8813603520393372
+                ]
+            ],
+            [
+                0.0,
+                0.0,
+                0.0
+            ]
+        ],
+        "output2": [
+            [
+                [
+                    -0.49320197105407715,
+                    0.7544192671775818,
+                    0.10014432668685913,
+                    -0.5538145303726196
+                ],
+                [
+                    0.5099512338638306,
+                    0.8300496339797974,
+                    0.17032095789909363,
+                    -0.21691635251045227
+                ],
+                [
+                    -0.2384629100561142,
+                    -0.7081472277641296,
+                    0.6277304887771606,
+                    0.14658017456531525
+                ],
+                [
+                    -0.4179723858833313,
+                    0.22158236801624298,
+                    -0.00748105812817812,
+                    -0.24651306867599487
+                ]
+            ],
+            [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ]
+        ]
+    }
+}

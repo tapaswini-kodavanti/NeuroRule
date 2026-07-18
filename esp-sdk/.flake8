@@ -1,0 +1,4 @@
+[flake8]
+max-line-length = 120
+exclude = venv,venv3,.git,.idea,generated,leaf_common
+max-complexity = 10

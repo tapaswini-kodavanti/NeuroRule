@@ -1,0 +1,269 @@
+{
+  "$id": "https://esp.evolution.ml/experiment_params.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ExperimentParams",
+  "description": "This schema specifies the allowed and required parameters for an experiment",
+  "definitions": {
+    "activation_function": {
+      "description": "One of the activation functions supported by Keras, such as tanh",
+      "type": "string",
+      "enum": [
+        "elu",
+        "hard_sigmoid",
+        "linear",
+        "relu",
+        "selu",
+        "sigmoid",
+        "softmax",
+        "softplus",
+        "softsign",
+        "tanh"
+      ]
+    }
+  },
+  "type": "object",
+  "required": [
+    "evolution"
+  ],
+  "optional": [
+    "network"
+  ],
+  "properties": {
+    "network": {
+      "description": "Parameters relating to the topology of the neural network to be used",
+      "type": "object",
+      "required": [
+        "inputs",
+        "outputs"
+      ],
+      "properties": {
+        "inputs": {
+          "description": "Input values (features) for the neural network",
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "hidden_layers": {
+          "description": "Specifications of layers within the neural network",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "layer_name",
+              "layer_type",
+              "layer_params"
+            ],
+            "properties": {
+              "layer_name": {
+                "description": "Human-readable name for this layer",
+                "type": "string"
+              },
+              "layer_type": {
+                "description": "Keras layer type to create. Currently only Dense is supported.",
+                "type": "string",
+                "enum": [
+                  "Dense"
+                ]
+              },
+              "layer_params": {
+                "description": "configuration parameters for this layer",
+                "type": "object",
+                "properties": {
+                  "units": {
+                    "type": "integer"
+                  },
+                  "activation": {
+                    "$ref": "#/definitions/activation_function"
+                  },
+                  "use_bias": {
+                    "description": "Whether to use bias input",
+                    "type": "boolean"
+                  }
+                },
+                "additionalProperties": false
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "nb_hidden_units": {
+          "description": "Number of hidden units in the the neural network",
+          "type": "integer"
+        },
+        "activation_function": {
+          "$ref": "#/definitions/activation_function"
+        },
+        "use_bias": {
+          "description": "If use_bias is True, a bias vector is created and added to the outputs.",
+          "type": "boolean"
+        },
+        "outputs": {
+          "description": "Outputs (predictions) for the neural network",
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "evolution": {
+      "description": "Items for configuring the behavior of the evolutionary algorithm",
+      "type": "object",
+      "required": [
+        "population_size"
+      ],
+      "properties": {
+        "population_size": {
+          "type": "integer"
+        },
+        "remove_population_pct": {
+          "description": "Portion of candidates to remove for each generation. Expressed as a value in [0, 1.0)",
+          "type": "number",
+          "minimum": 0,
+          "exclusiveMaximum": 1.0
+        },
+        "mutation_probability": {
+          "description": "The probability that a given gene within a candidate will be mutated from one generation to the next. Expressed as a value in [0, 1.0)",
+          "type": "number",
+          "minimum": 0,
+          "exclusiveMaximum": 1.0
+        },
+        "mutation_factor": {
+          "description": "Amount of mutation, for genes that are chosen to be mutated.",
+          "type": "number",
+          "minimum": 0,
+          "exclusiveMaximum": 1.0
+        },
+        "nb_elites": {
+          "description": "The number of 'elite' (high-fitness) candidates that will be retained from one generation to the next.",
+          "type": "integer",
+          "minimum": 0
+        },
+        "mutation_type": {
+          "description": "Mechanism to be used for mutating genes.",
+          "enum": [
+            "uniform_reset",
+            "gaussian_noise_fixed",
+            "gaussian_noise_percentage",
+            "none"
+          ],
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "array"
+            }
+          ]
+        },
+        "parent_selection": {
+          "description": "Method to be used for selecting which parents to breed.",
+          "type": "string",
+          "enum": [
+            "sigma_scaling",
+            "random",
+            "proportion",
+            "ranking",
+            "tournament",
+            "tournament_distinct",
+            "tournament_behavior_proportion",
+            "best"
+          ]
+        },
+        "crossover": {
+          "description": "Method to be used for crossover mutations",
+          "type": "string",
+          "pattern": "uniform_layer|uniform_weight|clone_daddy|\\d+_points"
+        },
+        "sigma_scaling_factor": {
+          "description": "TBD",
+          "type": "number",
+          "minimum": 0,
+          "exclusiveMaximum": 1.0
+        },
+        "initialization_distribution": {
+          "description": "TBD",
+          "type": "string",
+          "enum": [
+            "uniform",
+            "uniform+",
+            "uniform_normalized",
+            "uniform_normalized+",
+            "constant",
+            "normal",
+            "cauchy",
+            "orthogonal"
+          ]
+        },
+        "initialization_range": {
+          "description": "TBD",
+          "type": "integer",
+          "minimum": 0
+        },
+        "clip_weights": {
+          "description": "TBD",
+          "type": "boolean"
+        },
+        "clip_biases": {
+          "description": "TBD",
+          "type": "boolean"
+        },
+        "diversity": {
+          "description": "TBD",
+          "type": "string",
+          "enum": [
+            "different_from_parents",
+            "none"
+          ]
+        },
+        "fitness": {
+          "description": "One or more metrics used to measure the fitness of a candidate",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "metric_name",
+              "maximize"
+            ],
+            "properties": {
+              "metric_name": {
+                "description": "Name (key) of the metric to be optimized",
+                "type": "string"
+              },
+              "maximise": {
+                "description": "If True, attempt to maximize this metric, otherwise attempt to minimize it",
+                "type": "boolean"
+              },
+              "target": {
+                "description": "Target we're trying to reach for this metric",
+                "type": "number"
+              }
+            }
+          }
+        }
+      }
+    },
+    "LEAF": {
+      "description": "ENN-specific parameters",
+      "type": "object",
+      "properties": {
+        "representation": {
+          "type": "string",
+          "enum": [
+            "NNWeights",
+            "KerasNN",
+            "RuleBased",
+            "Structure"
+          ]
+        }
+      }
+    },
+    "representation_config": {
+        "description": "Configuration specific to the representation type",
+        "type": "object"
+    },
+    "additionalProperties": false
+  }
+}

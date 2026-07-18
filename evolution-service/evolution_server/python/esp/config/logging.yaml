@@ -1,0 +1,42 @@
+
+# Copyright (C) 2019-2023 Cognizant Digital Business, Evolutionary AI.
+# All Rights Reserved.
+# Issued under the Academic Public License.
+#
+# You can be released from the terms, and requirements of the Academic Public
+# License by purchasing a commercial license.
+# Purchase of a commercial license is mandatory for any use of the
+# esp-service Software in commercial settings.
+#
+# END COPYRIGHT
+---
+version: 1
+disable_existing_loggers: False
+formatters:
+  simple:
+    format: "%(message)s"
+
+handlers:
+  console:
+    class: logging.StreamHandler
+    level: DEBUG
+    formatter: simple
+    stream: ext://sys.stdout
+
+loggers:
+  esp_service:
+    level: DEBUG
+    handlers: [console]
+    propagate: no
+  persistence:
+    level: DEBUG
+    handlers: [console]
+    propagate: no
+  nnweights:
+    level: DEBUG
+    handlers: [console]
+    propagate: no
+
+root:
+  level: ERROR
+  handlers: [console]
