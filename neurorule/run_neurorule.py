@@ -5,7 +5,7 @@ import sys
 import shutil
 from pathlib import Path
 
-def run_pipeline(dataset, interval, base_config_template, generate_synthetic=False, user_data=None, user_weights=None, target_names=None):
+def run_pipeline(dataset, interval, base_config_template, generate_synthetic=False, user_data=None, target_names=None):
     print(f"=== Starting NeuroRule Pipeline ===")
     print(f"Dataset Name: {dataset} | Split Interval: {interval}")
 
@@ -46,43 +46,20 @@ def run_pipeline(dataset, interval, base_config_template, generate_synthetic=Fal
     print("\n--- Step 2: Perform ID / OOD Partitions ---")
     if not processed_data_path.exists():
         print(f"-> Preprocessing data into: {processed_data_path}")
-        # TODO: preprocess_data(raw_data_path, processed_data_path, target_names)
-
-    paths = [
-        train_id_path,
-        test_id_ood_path,
-        test_id_path,
-        test_ood_path
-    ]
-    train_test_exists = all(path.exists() for path in paths)
-
-    if not train_test_exists:
         print(f"-> Performing ID / OOD data splits...")
-        # TODO: split_id_ood_data(dataset=dataset, interval=interval)
+        X_in, y_in, _, _ = split_id_ood_data(raw_data_path, processed_data_path, dataset_dir, target_names)
 
     # -------------------------------------------------------------------------
     # STEP 3: Process and Ingest Weights file path
     # -------------------------------------------------------------------------
     print("\n--- Step 3: Handling Model Weights ---")
-    if user_weights:
-        user_weights_path = Path(user_weights)
-        if user_weights_path.exists():
-            print(f"-> Ingesting external weights from: {user_weights}")
-            model_dir.mkdir(parents=True, exist_ok=True)
-            shutil.copy(user_weights_path, weights_path)
-            print(f"   Successfully copied and cached to internal pipeline path: {weights_path}")
-        else:
-            print(f"Error: The provided weights file path '{user_weights}' does not exist.")
-            sys.exit(1)
-    else:
-        # Fallback: If no explicit weights path is provided, verify or train a dummy model
         if not weights_path.exists():
-            print("No weights provided or cached. Training baseline dummy network model...")
+            print("Training MLP network model...")
             model_dir.mkdir(parents=True, exist_ok=True)
             # TODO: train_mlp(dataset=dataset, save_path=str(weights_path))
-            print(f"   Dummy network trained. Saved weights internally to: {weights_path}")
+            print(f"   Network trained. Saved weights internally to: {weights_path}")
         else:
-            print(f"-> Using pre-existing cached weights found at: {weights_path}")
+            print(f"-> Using pre-existing weights found at: {weights_path}")
 
     # -------------------------------------------------------------------------
     # STEP 4: Generate Synthetic Data if Requested
@@ -159,7 +136,6 @@ if __name__ == "__main__":
         interval=args.interval, 
         base_config_template=args.template, 
         generate_synthetic=args.synthetic,
-        user_data=args.data, 
-        user_weights=args.weights, 
+        user_data=args.data,
         target_names=args.target_names
     )

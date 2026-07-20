@@ -1,0 +1,3 @@
+NeuroRule structure
+- MLP model used in code
+- Synthetic data generator
