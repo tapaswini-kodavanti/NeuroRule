@@ -56,7 +56,7 @@ def run_pipeline(dataset, interval, base_config_template, generate_synthetic=Fal
         if not weights_path.exists():
             print("Training MLP network model...")
             model_dir.mkdir(parents=True, exist_ok=True)
-            # TODO: train_mlp(dataset=dataset, save_path=str(weights_path))
+            TODO: train_model(X_in, y_in, dataset_dir=dataset_dir, model_dir=model_dir)
             print(f"   Network trained. Saved weights internally to: {weights_path}")
         else:
             print(f"-> Using pre-existing weights found at: {weights_path}")
