@@ -56,7 +56,7 @@ def run_pipeline(dataset, interval, base_config_template, generate_synthetic=Fal
         if not weights_path.exists():
             print("Training MLP network model...")
             model_dir.mkdir(parents=True, exist_ok=True)
-            TODO: train_model(X_in, y_in, dataset_dir=dataset_dir, model_dir=model_dir)
+            train_model(X_in, y_in, dataset_dir=dataset_dir, model_dir=model_dir)
             print(f"   Network trained. Saved weights internally to: {weights_path}")
         else:
             print(f"-> Using pre-existing weights found at: {weights_path}")
@@ -67,7 +67,7 @@ def run_pipeline(dataset, interval, base_config_template, generate_synthetic=Fal
     print("--- Step 4: Generating Synthetic Data ---")
     if generate_synthetic:
         print("Generating synthetic from base model...")
-        # TODO: generate_synthetic_data(dataset=dataset, interval=interval, weights_file=weights_path)
+        generate_synthetic_data(dataset_dir=dataset_dir, model_dir=model_dir, X_in=X_in, y_in=y_in)
     else:
         print("Synthetic data not requested. Skipping step.")
 
@@ -81,28 +81,29 @@ def run_pipeline(dataset, interval, base_config_template, generate_synthetic=Fal
     dc = config["domain_config"]
 
     print("Reading input and output features")
-    # TODO: inputs, outputs = read_features(processed_data_path)
+    inputs, outputs = read_features(processed_data_path, dataset, target_names)
 
-    # TODO: Programmatically insert the following into the json file
-    # inputs, outputs
-    # target names
-    # synthetic data file (refers to filtered data used in NeuroRule training)
-    # raw_data_file (combined ID+ODD training data, represents baseline processed data)
-    # in/out_distribution_data
-    # experiment_id: dataset_test
+    temp_config_path = Path(f"configs/{dataset}/{interval}")
+    temp_config_file = temp_config_path / dataset + "_config.json"
+
+    generate_neurorule_config(
+        template_path="configs/neurorule_template.json",
+        output_config_path=temp_config_file,
+        dataset_name=dataset,
+        interval=interval,
+        inputs_schema=inputs,
+        outputs_schema=outputs,
+        target_names=target_names
+    )
 
     # Save transient/active JSON file for the framework to pick up
-    temp_config_path = Path(f"configs/{dataset}/{interval}")
-    temp_config_path.parent.mkdir(parents=True, exist_ok=True)
-    with open(temp_config_path, 'w') as f:
-        json.dump(config, f, indent=4)
     print(f"-> Execution config written to temporary path: {temp_config_path}")
 
     # -------------------------------------------------------------------------
     # STEP 6: Launch Evolution Execution Loop
     # -------------------------------------------------------------------------
     print("\n--- Step 6: Starting NeuroRule Evolutionary Process ---")
-    # TODO: review command cmd = f"python main_entry_point.py --config {temp_config_path}"
+    cmd = f"python evolution/app/evolve.py -p {temp_config_file}"
     print(f"Executing underlying repository command: {cmd}\n")
     
     exit_status = os.system(cmd)
@@ -115,6 +116,25 @@ def run_pipeline(dataset, interval, base_config_template, generate_synthetic=Fal
 
 
 if __name__ == "__main__":
+    ## Export sub-module directories to PYTHONPATH for seamless imports
+    # Automatically detect the project root relative to this script
+    ROOT_DIR = Path(__file__).resolve().parent
+
+    # List the required sub-module directories
+    submodules = ["leaf-common", "evolution", "esp-sdk", "evolution-service"]
+
+    # Add each directory to Python's runtime import path (sys.path)
+    for sub in submodules:
+        sub_path = str(ROOT_DIR / sub)
+        if sub_path not in sys.path:
+            sys.path.insert(0, sub_path)
+
+    # Also set it in os.environ so child subprocesses (like os.system or subprocess.run) inherit it
+    current_pythonpath = os.environ.get("PYTHONPATH", "")
+    new_paths = ":".join([str(ROOT_DIR / sub) for sub in submodules])
+    os.environ["PYTHONPATH"] = f"{new_paths}:{current_pythonpath}"
+
+    ## Parse command-line arguments for the pipeline
     parser = argparse.ArgumentParser(description="Automated NeuroRule Orchestration Command Interface")
     
     # Core Pipeline Flags

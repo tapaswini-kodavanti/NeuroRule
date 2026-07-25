@@ -85,3 +85,39 @@ def split_id_ood_data(raw_data_path=None, processed_data_path=None, dataset_dir=
 
 
     return X_in, y_in, X_out, y_out
+
+
+def generate_input_output_schema(processed_data_path, dataset_name, target_names):
+    """
+    Inspects a processed CSV to generate the framework's 'inputs' and 'outputs' structures.
+    """
+    df = pd.read_csv(processed_data_path)
+
+    # Separate features from target
+    feature_cols = [col for col in df.columns if col not in target_names]
+    # feature_cols = [col for col in df.columns if col != target_column]
+    
+    inputs_schema = []
+    for col in feature_cols:
+        dtype_str = "float"
+        # Infer type based on pandas dtypes or uniqueness
+        if df[col].dtype == 'bool' or set(df[col].dropna().unique()).issubset({0, 1, 0.0, 1.0}):
+            dtype_str = "bool"
+            
+        inputs_schema.append({
+            "name": col,
+            "size": 1,
+            "values": [dtype_str]
+        })
+        
+    outputs_schema = [
+        {
+            "name": dataset_name + "_target",
+            "size": len(target_names),
+            "activation": "softmax" if len(target_names) > 1 else "sigmoid",
+            "use_bias": True,
+            "values": target_names
+        }
+    ]
+    
+    return inputs_schema, outputs_schema
