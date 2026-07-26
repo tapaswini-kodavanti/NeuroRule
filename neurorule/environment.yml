@@ -1,0 +1,9 @@
+name: neurorule-test
+channels:
+  - defaults
+dependencies:
+  - pip
+  - python==3.10.18
+  - ipykernel
+  - pathos
+prefix: /opt/anaconda3/envs/neurorule

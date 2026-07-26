@@ -5,7 +5,7 @@ import pandas as pd
 from sklearn import datasets
 from sklearn.preprocessing import StandardScaler
 
-from model import MLP
+from src.model import MLP
 
 # class MLP(nn.Module):
 #     def __init__(self, input_dim, num_classes=2):

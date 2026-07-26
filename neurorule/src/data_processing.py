@@ -1,7 +1,8 @@
+import sys
 import pandas as pd
 
 # One-hot encodes data features
-def split_id_ood_data(raw_data_path=None, processed_data_path=None, dataset_dir=None, class_names=None):
+def split_id_ood_data(raw_data_path=None, processed_data_path=None, dataset_dir=None, class_names=None, interval=None):
     if not (raw_data_path and class_names):
         print(f"Error: The provided dataset does not exist.")
         sys.exit(1)
@@ -14,7 +15,7 @@ def split_id_ood_data(raw_data_path=None, processed_data_path=None, dataset_dir=
 
     # Sort cateogorical and numerical features
     categorical_features = X.select_dtypes(include=["object", "category", "bool"]).columns.tolist()
-    numeric_features = X.select_dtypes(include=["int64", "float64"]).columns.tolist()
+    numeric_features = X.select_dtypes(include=["integer", "floating"]).columns.tolist()
 
     bool_cols = X.select_dtypes(include='bool').columns
     for col in bool_cols:
@@ -22,10 +23,10 @@ def split_id_ood_data(raw_data_path=None, processed_data_path=None, dataset_dir=
 
 
     # switch_features = ["Diabetes", "Hypertension"]
-    # switch_features = ['FastingBS'] # actually a bool column
-    # for feature in switch_features:
-        # numeric_features.remove(feature)
-        # categorical_features.append(feature)
+    switch_features = ['FastingBS'] # actually a bool column
+    for feature in switch_features:
+        numeric_features.remove(feature)
+        categorical_features.append(feature)
 
     # print(X.head())
     # print(y.head())
@@ -36,13 +37,22 @@ def split_id_ood_data(raw_data_path=None, processed_data_path=None, dataset_dir=
 
     # print("\nData loaded")
 
-    # One-hot encode the column
+    # One-hot encode the X column
     df_encoded = dataset.copy()
     for c in categorical_features:
         df_encoded = pd.get_dummies(df_encoded, columns=[c], drop_first=False)
 
+    # One-hot encode the y column 
+    for c in class_names:
+        df_encoded = pd.get_dummies(df_encoded, columns=[c], drop_first=False)
+    class_names = [col for col in df_encoded.columns if col.startswith(tuple(class_names))]
+
     # Save output
     df_encoded.to_csv(processed_data_path, index=False)
+
+    X = df_encoded.drop(columns=class_names)
+    y = df_encoded[class_names]
+    y.columns = class_names
 
 
 
@@ -58,8 +68,9 @@ def split_id_ood_data(raw_data_path=None, processed_data_path=None, dataset_dir=
         low = mins + gamma * spans
         high = maxs - gamma * spans
         return low, high
-    
-    low_bounds, high_bounds = compute_shrunk_bounds(X, numeric_features)
+
+    gamma = (1.0 - interval) / 2.0
+    low_bounds, high_bounds = compute_shrunk_bounds(X, numeric_features, gamma)
 
     mask = pd.Series([True] * X.shape[0])
     for i, col in enumerate(numeric_features):
@@ -84,7 +95,7 @@ def split_id_ood_data(raw_data_path=None, processed_data_path=None, dataset_dir=
         output_data.to_csv(out_distribution_file, index=False)
 
 
-    return X_in, y_in, X_out, y_out
+    return X_in, y_in, class_names, X_out, y_out
 
 
 def generate_input_output_schema(processed_data_path, dataset_name, target_names):
@@ -121,3 +132,28 @@ def generate_input_output_schema(processed_data_path, dataset_name, target_names
     ]
     
     return inputs_schema, outputs_schema
+
+
+def set_training_files(dataset_dir):
+    test_id_ood_path = dataset_dir / "test" / "ID+OOD" / "data.csv"
+    test_id_path = dataset_dir / "test" / "ID" / "data.csv"
+    test_ood_path = dataset_dir / "test" / "OOD" / "data.csv"
+
+    # Read OOD data
+    ood_data_path = dataset_dir / "out_of_distribution.csv"
+    if ood_data_path.exists():
+        ood_df = pd.read_csv(ood_data_path)
+        ood_df.to_csv(test_ood_path, index=False)
+
+        # Combine ID and OOD for the combined test set
+        test_df = pd.read_csv(test_id_path)
+        combined_df = pd.concat([test_df, ood_df], axis=0)
+        combined_df.to_csv(test_id_ood_path, index=False)
+
+    # Clean up ID and OOD files
+    in_distribution_file = dataset_dir / "in_distribution.csv"
+    out_distribution_file = dataset_dir / "out_of_distribution.csv"
+    if in_distribution_file.exists():
+        in_distribution_file.unlink()
+    if out_distribution_file.exists():
+        out_distribution_file.unlink()
