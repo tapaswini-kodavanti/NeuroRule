@@ -85,20 +85,24 @@ def run_pipeline(dataset, interval, generate_synthetic=False, user_data=None, ta
         print("Training MLP network model...")
         model_dir.mkdir(parents=True, exist_ok=True)
         train_model(X_in, y_in, model_dir=model_dir, dataset_dir=dataset_dir)
-        print(f"   Network trained. Saved weights internally to: {weights_path}")
+        print(f"   Network trained. Saved weights internally to: {weights_path}\n")
         set_training_files(dataset_dir)
     else:
-        print(f"-> Using pre-existing weights found at: {weights_path}")
+        print(f"-> Using pre-existing weights found at: {weights_path}\n")
 
     # -------------------------------------------------------------------------
     # STEP 4: Generate Synthetic Data if Requested
     # -------------------------------------------------------------------------
     print("--- Step 4: Generating Synthetic Data ---")
     if generate_synthetic:
-        print("Generating synthetic from base model...")
-        generate_synthetic_data(dataset_dir=dataset_dir, model_dir=model_dir, X_in=X_in, y_in=y_in, class_names=target_names)
+        if synthetic_data_path.exists():
+            print(f"-> Synthetic data already exists at: {synthetic_data_path}. Skipping generation.\n")
+        else:
+            print("Generating synthetic from base model...")
+            generate_synthetic_data(dataset_dir=dataset_dir, model_dir=model_dir, X_in=X_in, y_in=y_in, class_names=target_names)
+            print(f"   Data generated. Saved weights internally to: {synthetic_data_path}\n")
     else:
-        print("Synthetic data not requested. Skipping step.")
+        print("Synthetic data not requested. Skipping step.\n")
 
     # -------------------------------------------------------------------------
     # STEP 5: Dynamically Populating Configuration Template

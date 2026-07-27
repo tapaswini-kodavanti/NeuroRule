@@ -1,4 +1,4 @@
-name: neurorule-test
+name: neurorule
 channels:
   - defaults
   - conda-forge
@@ -41,4 +41,4 @@ dependencies:
   - jsonschema
   - pip:
       - pytest-timer
-prefix: /opt/anaconda3/envs/neurorule-test
+prefix: /opt/anaconda3/envs/neurorule

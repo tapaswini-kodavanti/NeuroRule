@@ -1,0 +1,289 @@
+{
+    "network": {
+        "hidden_layers": [
+            {
+                "layer_name": "hidden_1",
+                "layer_type": "Dense",
+                "layer_params": {
+                    "units": 32,
+                    "activation": "tanh",
+                    "use_bias": true
+                }
+            }
+        ],
+        "inputs": [
+            {
+                "name": "mean radius",
+                "size": 1,
+                "values": [
+                    "float"
+                ]
+            },
+            {
+                "name": "mean texture",
+                "size": 1,
+                "values": [
+                    "float"
+                ]
+            },
+            {
+                "name": "mean perimeter",
+                "size": 1,
+                "values": [
+                    "float"
+                ]
+            },
+            {
+                "name": "mean area",
+                "size": 1,
+                "values": [
+                    "float"
+                ]
+            },
+            {
+                "name": "mean smoothness",
+                "size": 1,
+                "values": [
+                    "float"
+                ]
+            },
+            {
+                "name": "mean compactness",
+                "size": 1,
+                "values": [
+                    "float"
+                ]
+            },
+            {
+                "name": "mean concavity",
+                "size": 1,
+                "values": [
+                    "float"
+                ]
+            },
+            {
+                "name": "mean concave points",
+                "size": 1,
+                "values": [
+                    "float"
+                ]
+            },
+            {
+                "name": "mean symmetry",
+                "size": 1,
+                "values": [
+                    "float"
+                ]
+            },
+            {
+                "name": "mean fractal dimension",
+                "size": 1,
+                "values": [
+                    "float"
+                ]
+            },
+            {
+                "name": "radius error",
+                "size": 1,
+                "values": [
+                    "float"
+                ]
+            },
+            {
+                "name": "texture error",
+                "size": 1,
+                "values": [
+                    "float"
+                ]
+            },
+            {
+                "name": "perimeter error",
+                "size": 1,
+                "values": [
+                    "float"
+                ]
+            },
+            {
+                "name": "area error",
+                "size": 1,
+                "values": [
+                    "float"
+                ]
+            },
+            {
+                "name": "smoothness error",
+                "size": 1,
+                "values": [
+                    "float"
+                ]
+            },
+            {
+                "name": "compactness error",
+                "size": 1,
+                "values": [
+                    "float"
+                ]
+            },
+            {
+                "name": "concavity error",
+                "size": 1,
+                "values": [
+                    "float"
+                ]
+            },
+            {
+                "name": "concave points error",
+                "size": 1,
+                "values": [
+                    "float"
+                ]
+            },
+            {
+                "name": "symmetry error",
+                "size": 1,
+                "values": [
+                    "float"
+                ]
+            },
+            {
+                "name": "fractal dimension error",
+                "size": 1,
+                "values": [
+                    "float"
+                ]
+            },
+            {
+                "name": "worst radius",
+                "size": 1,
+                "values": [
+                    "float"
+                ]
+            },
+            {
+                "name": "worst texture",
+                "size": 1,
+                "values": [
+                    "float"
+                ]
+            },
+            {
+                "name": "worst perimeter",
+                "size": 1,
+                "values": [
+                    "float"
+                ]
+            },
+            {
+                "name": "worst area",
+                "size": 1,
+                "values": [
+                    "float"
+                ]
+            },
+            {
+                "name": "worst smoothness",
+                "size": 1,
+                "values": [
+                    "float"
+                ]
+            },
+            {
+                "name": "worst compactness",
+                "size": 1,
+                "values": [
+                    "float"
+                ]
+            },
+            {
+                "name": "worst concavity",
+                "size": 1,
+                "values": [
+                    "float"
+                ]
+            },
+            {
+                "name": "worst concave points",
+                "size": 1,
+                "values": [
+                    "float"
+                ]
+            },
+            {
+                "name": "worst symmetry",
+                "size": 1,
+                "values": [
+                    "float"
+                ]
+            },
+            {
+                "name": "worst fractal dimension",
+                "size": 1,
+                "values": [
+                    "float"
+                ]
+            }
+        ],
+        "outputs": [
+            {
+                "name": "bc_target",
+                "size": 2,
+                "activation": "softmax",
+                "use_bias": true,
+                "values": [
+                    "malignant",
+                    "benign"
+                ]
+            }
+        ]
+    },
+    "domain_config": {
+        "domain_name": "uci_data",
+        "fitness": "uci_nn_fitness",
+        "config_filter_class_name": "SklearnNetworkConfigFilter",
+        "evaluator_class_name": "UciDataEvaluator",
+        "data_set": "load_breast_cancer",
+        "target_names": [
+            "malignant",
+            "benign"
+        ],
+        "synthetic_data_file": "data/bc/datasets/0.8/train/synthetic/data.csv",
+        "weights_file": "data/bc/models/0.8/weights.pth",
+        "raw_data_file": "data/bc/datasets/0.8/test/ID+OOD/data.csv",
+        "in_distribution_data": "data/bc/datasets/0.8/test/ID/data.csv",
+        "out_of_distribution_data": "data/bc/datasets/0.8/test/OOD/data.csv"
+    },
+    "evolution": {
+        "nb_generations": 200,
+        "population_size": 100,
+        "nb_elites": 10,
+        "parent_selection": "tournament",
+        "fitness": [
+            {
+                "metric_name": "score",
+                "maximize": true,
+                "target": 1.0
+            }
+        ],
+        "remove_population_pct": 0.8,
+        "early_stop": true,
+        "novelty_selection_multiplier": 1.5,
+        "novelty_pulsation_cycle": 1,
+        "mutation_probability": 0.7
+    },
+    "LEAF": {
+        "esp_host_official": "v1.esp.evolution.ml",
+        "esp_host": null,
+        "esp_port": 50051,
+        "representation": "RuleBased",
+        "experiment_id": "uci_bc_test",
+        "reevaluate_elites": false,
+        "distributed": false,
+        "coevolution": false,
+        "version": "0.0.1",
+        "persistence_dir": "candidate-solutions/",
+        "candidates_to_persist": "best"
+    },
+    "experiment_config": {
+        "domain": "uci_data"
+    }
+}
