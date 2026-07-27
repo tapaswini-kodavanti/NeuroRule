@@ -56,7 +56,7 @@ The `run_neurorule.py` entry point accepts the following arguments:
 | Flag | Type | Default | Description |
 | :--- | :--- | :--- | :--- |
 | `--data` | `str` | `None` | Path to raw or preprocessed dataset (`.csv`). |
-| `--weights` | `str` | `None` | Path to custom pre-trained base model weights (`.pth`). If omitted, a dummy architecture will be automatically trained. |
+| `--weights` | `str` | `None` | Path to custom pre-trained base model weights (`.pth`). If omitted, a pre-built architecture will be automatically trained. |
 
 ### Domain Options
 
@@ -81,7 +81,7 @@ python run_neurorule.py \
 ```
 
 ### 2. Run Baseline Benchmark (Auto-Train Dummy Base Network)
-If you do not provide weights, the pipeline automatically spins up a baseline dummy architecture, trains it, and caches the resulting weights:
+If you do not provide weights, the pipeline automatically spins up a baseline architecture, trains it, and caches the resulting weights:
 
 ```bash
 python run_neurorule.py \
