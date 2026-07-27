@@ -1,4 +1,4 @@
-# NeuroRule
+# NeuroRule: Rule-Based Neural Network Distillation
 
 An automated, end-to-end framework to evolve explainable rule-set models from neural networks. 
 
