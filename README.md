@@ -1,6 +1,6 @@
 # NeuroRule
 
-An automated, end-to-end framework for neural network rule extraction, dataset distillation, and evolutionary search evaluation. 
+An automated, end-to-end framework to evolve explainable rule-set models from neural networks. 
 
 This repository orchestrates the complete experimental pipeline: automatically handling input/output schema generation, dataset splitting, base model weight ingestion, synthetic data generation, and active JSON configuration construction.
 
@@ -104,3 +104,5 @@ neurorule/
 Runtime execution configs and dataset caches are stored under:
 * **Generated Config:** `configs/nested/tmp_active_config.json`
 * **Cached Data & Weights:** `data/{dataset}/datasets/{interval}/` and `data/{dataset}/models/{interval}/`
+
+[Paper](https://apps.cs.utexas.edu/apps/tech-reports/208654)
