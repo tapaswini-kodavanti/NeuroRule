@@ -21,4 +21,4 @@ ACTION_MARKER = "a_"
 
 # Environments dir
 import os
-EXPERIMENTS_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..', 'experiments'))
+EXPERIMENTS_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..', 'neurorule'))

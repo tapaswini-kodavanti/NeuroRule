@@ -9,7 +9,7 @@ if EXPERIMENTS_DIR not in sys.path:
     print(f"Directory being added to sys.path: {EXPERIMENTS_DIR}")
 
 import numpy as np
-from MLPModule import MLP
+from src.model import MLP
 from sklearn.preprocessing import StandardScaler
 
 
@@ -36,9 +36,10 @@ def uci_nn_fitness(inputs, predictions, weights_filename, num_classes):
 
     # Load weights
     WEIGHTS_PATH = os.path.join(EXPERIMENTS_DIR, weights_filename)
-    model.load_state_dict(torch.load(WEIGHTS_PATH))
+    model.load_state_dict(torch.load(WEIGHTS_PATH, weights_only=True))
     model.eval()
 
+    inputs = np.array(inputs, dtype=np.float32)
     input_tensor = torch.tensor(inputs, dtype=torch.float32)
     scaler = StandardScaler()
     input_tensor = torch.tensor(scaler.fit_transform(input_tensor), dtype=torch.float32)

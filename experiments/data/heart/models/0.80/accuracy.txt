@@ -1,6 +1,0 @@
-In-distribution Accuracy: 88.79%
-Out-of-distribution Accuracy: 77.65%
-Total Samples: 456
-Overall Accuracy: 80.48%
-
-{0: 0.4978354871273041, 1: 0.5021644830703735}
