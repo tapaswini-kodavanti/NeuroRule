@@ -1,6 +1,5 @@
 import json
 import re
-import pandas as pd
 from pathlib import Path
 
 def generate_neurorule_config(
@@ -11,7 +10,8 @@ def generate_neurorule_config(
     inputs_schema: list[dict],
     outputs_schema: list[dict],
     target_names: list[str],
-    user_weights_path: str = None
+    user_weights_path: str = None,
+    use_synthetic_data: bool = False
 ):
     """
     Programmatically builds a complete NeuroRule JSON configuration.
@@ -39,7 +39,10 @@ def generate_neurorule_config(
     # 2. CONSTRUCT DYNAMIC PATHS
     # -------------------------------------------------------------------------
     weights_file = user_weights_path or f"data/{dataset_name}/models/{interval}/weights.pth"
-    synthetic_data_file = f"data/{dataset_name}/datasets/{interval}/train/ID/data.csv"
+    if use_synthetic_data:
+        synthetic_data_file = f"data/{dataset_name}/datasets/{interval}/train/synthetic/data.csv"
+    else:
+        synthetic_data_file = f"data/{dataset_name}/datasets/{interval}/train/ID/data.csv"
     raw_data_file = f"data/{dataset_name}/datasets/{interval}/test/ID+OOD/data.csv"
     in_dist_file = f"data/{dataset_name}/datasets/{interval}/test/ID/data.csv"
     out_dist_file = f"data/{dataset_name}/datasets/{interval}/test/OOD/data.csv"
@@ -53,7 +56,6 @@ def generate_neurorule_config(
 
     # Inject domain_config details
     dc = config["domain_config"]
-    dc["data_set"] = f"load_{dataset_name}"
     dc["target_names"] = target_names
     dc["synthetic_data_file"] = synthetic_data_file
     dc["weights_file"] = weights_file

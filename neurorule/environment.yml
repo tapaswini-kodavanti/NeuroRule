@@ -1,9 +1,44 @@
 name: neurorule-test
 channels:
   - defaults
+  - conda-forge
 dependencies:
   - pip
-  - python==3.10.18
+  - python
   - ipykernel
+  - scikit-learn
+  - pytorch
+  - torchvision
+  - torchaudio
+  - pyhocon
+  - ruamel.yaml
+  - pyjwt
+  - cryptography
+  - hvac
+  - pyopenssl
+  - keras
+  - tensorflow
+  - h5py
+  - numpy
+  - grpcio
+  - protobuf
+  - tenacity
+  - pandas
+  - matplotlib
   - pathos
-prefix: /opt/anaconda3/envs/neurorule
+  - ppft
+  - setuptools
+  - setuptools_scm
+  - pytest
+  - flake8
+  - pylint
+  - mkdocs
+  - scipy
+  - click
+  - s3fs
+  - grpcio-tools
+  - grpcio-health-checking
+  - jsonschema
+  - pip:
+      - pytest-timer
+prefix: /opt/anaconda3/envs/neurorule-test

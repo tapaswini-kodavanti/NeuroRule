@@ -21,31 +21,16 @@ def split_id_ood_data(raw_data_path=None, processed_data_path=None, dataset_dir=
     for col in bool_cols:
         X[col] = X[col].astype(int)
 
-
-    # switch_features = ["Diabetes", "Hypertension"]
-    switch_features = ['FastingBS'] # actually a bool column
-    for feature in switch_features:
-        numeric_features.remove(feature)
-        categorical_features.append(feature)
-
-    # print(X.head())
-    # print(y.head())
-    # print(class_names)
-
-    # print(categorical_features)
-    # print(numeric_features)
-
-    # print("\nData loaded")
-
     # One-hot encode the X column
     df_encoded = dataset.copy()
     for c in categorical_features:
         df_encoded = pd.get_dummies(df_encoded, columns=[c], drop_first=False)
 
     # One-hot encode the y column 
-    for c in class_names:
-        df_encoded = pd.get_dummies(df_encoded, columns=[c], drop_first=False)
-    class_names = [col for col in df_encoded.columns if col.startswith(tuple(class_names))]
+    if len(class_names) == 1:
+        for c in class_names:
+            df_encoded = pd.get_dummies(df_encoded, columns=[c], drop_first=False)
+        class_names = [col for col in df_encoded.columns if col.startswith(tuple(class_names))]
 
     # Save output
     df_encoded.to_csv(processed_data_path, index=False)
@@ -53,8 +38,6 @@ def split_id_ood_data(raw_data_path=None, processed_data_path=None, dataset_dir=
     X = df_encoded.drop(columns=class_names)
     y = df_encoded[class_names]
     y.columns = class_names
-
-
 
     ### Perform ID / OOD Splits
     def compute_shrunk_bounds(df, numeric_features, gamma=0.1, low_pct=1.0, high_pct=99.0):

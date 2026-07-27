@@ -1,26 +1,9 @@
 import torch
-import torch.nn as nn
 import numpy as np
 import pandas as pd
-from sklearn import datasets
 from sklearn.preprocessing import StandardScaler
 
 from src.model import MLP
-
-# class MLP(nn.Module):
-#     def __init__(self, input_dim, num_classes=2):
-#         super().__init__()
-#         self.net = nn.Sequential(
-#             nn.Linear(input_dim, 32),
-#             nn.ReLU(),
-#             nn.Linear(32, 16),
-#             nn.ReLU(),
-#             nn.Linear(16, num_classes)
-#         )
-
-#     def forward(self, x):
-#         return self.net(x)
-
 
 ### SYNTHESIS FUNCTIONS ###
 
@@ -127,7 +110,7 @@ def output_dataset(X_synth, y_synth, class_names, filename):
     synth_data.to_csv(filename, index=False)
 
 
-def generate_synthetic_data(dataset_dir, model_dir, X_in, y_in, alpha=1.0, multiplier=200, conf_threshold=0.7):
+def generate_synthetic_data(dataset_dir, model_dir, X_in, y_in, class_names, alpha=1.0, multiplier=200, conf_threshold=0.7):
     data_size = X_in.shape[0]
     num_samples = int(alpha * data_size)
     distribution_map = get_distribution(y_in.values.squeeze())
@@ -144,7 +127,7 @@ def generate_synthetic_data(dataset_dir, model_dir, X_in, y_in, alpha=1.0, multi
     weights_filename = model_dir / "weights.pth"
     if weights_filename:
         model = MLP(input_dim, num_classes)
-        model.load_state_dict(torch.load(weights_filename))
+        model.load_state_dict(torch.load(weights_filename, weights_only=True))
         model.eval()
         predictions = model(X_tensor)
 
@@ -155,6 +138,8 @@ def generate_synthetic_data(dataset_dir, model_dir, X_in, y_in, alpha=1.0, multi
         print(f"Error: The provided weights file path '{weights_filename}' does not exist")
 
     X_synth_raw = synthesize_data(X_in, numeric_cols, categorical_cols, num_samples * multiplier, gamma=0.0)
-    X_synth, y_synth, preds = synthesize_to_distribution(X_synth_raw, model, StandardScaler(), distribution_map, conf_threshold, num_samples)
+    X_synth, y_synth, _ = synthesize_to_distribution(X_synth_raw, model, StandardScaler(), distribution_map, conf_threshold, num_samples)
+
+    filename = dataset_dir / "train" / "synthetic" / "data.csv"
     output_dataset(X_synth, y_synth, class_names, filename)
 

@@ -7,7 +7,7 @@ from pathlib import Path
 
 # Fix sys.path BEFORE importing any submodules
 ROOT_DIR = Path(__file__).resolve().parent.parent
-submodules = ["leaf-common", "evolution", "esp-sdk", "evolution-service"]
+submodules = ["leaf-common", "evolution", "esp-sdk", "evolution-service", "pyleafai"]
 
 for sub in submodules:
     sub_path = str(ROOT_DIR / sub)
@@ -18,15 +18,13 @@ current_pythonpath = os.environ.get("PYTHONPATH", "")
 new_paths = ":".join([str(ROOT_DIR / sub) for sub in submodules])
 os.environ["PYTHONPATH"] = f"{new_paths}:{current_pythonpath}"
 
+
+
+
 from src.data_processing import split_id_ood_data, generate_input_output_schema, set_training_files
 from src.training import train_model
 from src.synthetic_data_generator import generate_synthetic_data
 from src.config_generator import generate_neurorule_config
-
-
-
-
-
 
 def run_pipeline(dataset, interval, generate_synthetic=False, user_data=None, target_names=None):
     print(f"=== Starting NeuroRule Pipeline ===")
@@ -45,6 +43,8 @@ def run_pipeline(dataset, interval, generate_synthetic=False, user_data=None, ta
     test_id_path = dataset_dir / "test" / "ID" / "data.csv"
     test_ood_path = dataset_dir / "test" / "OOD" / "data.csv"
 
+    synthetic_data_path = dataset_dir / "train" / "synthetic" / "data.csv"
+
     # -------------------------------------------------------------------------
     # STEP 1: Process and Ingest Data File Path
     # -------------------------------------------------------------------------
@@ -57,6 +57,8 @@ def run_pipeline(dataset, interval, generate_synthetic=False, user_data=None, ta
             test_id_ood_path.parent.mkdir(parents=True, exist_ok=True)
             test_id_path.parent.mkdir(parents=True, exist_ok=True)
             test_ood_path.parent.mkdir(parents=True, exist_ok=True)
+            synthetic_data_path.parent.mkdir(parents=True, exist_ok=True)
+
             shutil.copy(user_data_path, raw_data_path)
             print(f"   Successfully copied data to internal pipeline path: {raw_data_path}")
         else:
@@ -94,7 +96,7 @@ def run_pipeline(dataset, interval, generate_synthetic=False, user_data=None, ta
     print("--- Step 4: Generating Synthetic Data ---")
     if generate_synthetic:
         print("Generating synthetic from base model...")
-        generate_synthetic_data(dataset_dir=dataset_dir, model_dir=model_dir, X_in=X_in, y_in=y_in)
+        generate_synthetic_data(dataset_dir=dataset_dir, model_dir=model_dir, X_in=X_in, y_in=y_in, class_names=target_names)
     else:
         print("Synthetic data not requested. Skipping step.")
 
@@ -106,7 +108,10 @@ def run_pipeline(dataset, interval, generate_synthetic=False, user_data=None, ta
     inputs, outputs = generate_input_output_schema(processed_data_path, dataset, target_names)
 
     temp_config_path = Path(f"configs/{dataset}/{interval}")
-    temp_config_file = temp_config_path / str(dataset + "_config.json")
+    if generate_synthetic:
+        temp_config_file = temp_config_path / str(dataset + "_synthetic_config.json")
+    else:
+        temp_config_file = temp_config_path / str(dataset + "_config.json")
 
     generate_neurorule_config(
         template_path="configs/neurorule_template.json",
@@ -115,7 +120,8 @@ def run_pipeline(dataset, interval, generate_synthetic=False, user_data=None, ta
         interval=interval,
         inputs_schema=inputs,
         outputs_schema=outputs,
-        target_names=target_names
+        target_names=target_names,
+        use_synthetic_data=generate_synthetic,
     )
 
     # Save transient/active JSON file for the framework to pick up
@@ -125,8 +131,6 @@ def run_pipeline(dataset, interval, generate_synthetic=False, user_data=None, ta
     # STEP 6: Launch Evolution Execution Loop
     # -------------------------------------------------------------------------
     print("\n--- Step 6: Starting NeuroRule Evolutionary Process ---")
-    cmd = f"python3 ../evolution/app/evolve.py -p {temp_config_file}"
-    print(f"Executing underlying repository command: {cmd}\n")
 
     # Build absolute paths for PYTHONPATH
     abs_submodule_paths = [str((ROOT_DIR / sub).resolve()) for sub in submodules]
@@ -135,8 +139,8 @@ def run_pipeline(dataset, interval, generate_synthetic=False, user_data=None, ta
     custom_env = os.environ.copy()
     existing_pythonpath = custom_env.get("PYTHONPATH", "")
     custom_env["PYTHONPATH"] = ":".join(abs_submodule_paths) + (f":{existing_pythonpath}" if existing_pythonpath else "")
-    
-    result = subprocess.run(cmd, shell=True)
+
+    result = subprocess.run([sys.executable, "../evolution/app/evolve.py", "-p", str(temp_config_file)])
     exit_status = result.returncode
     
     if exit_status == 0:
@@ -147,23 +151,6 @@ def run_pipeline(dataset, interval, generate_synthetic=False, user_data=None, ta
 
 
 if __name__ == "__main__":
-    ## Export sub-module directories to PYTHONPATH for seamless imports
-    # Automatically detect the project root relative to this script
-    # ROOT_DIR = Path(__file__).resolve().parent
-
-    # # List the required sub-module directories
-    # submodules = ["leaf-common", "evolution", "esp-sdk", "evolution-service"]
-
-    # # Add each directory to Python's runtime import path (sys.path)
-    # for sub in submodules:
-    #     sub_path = str(ROOT_DIR / sub)
-    #     sys.path.insert(0, sub_path)
-
-    # # Also set it in os.environ so child subprocesses (like os.system or subprocess.run) inherit it
-    # current_pythonpath = os.environ.get("PYTHONPATH", "")
-    # new_paths = ":".join([str(ROOT_DIR / sub) for sub in submodules])
-    # os.environ["PYTHONPATH"] = f"{new_paths}:{current_pythonpath}"
-
     ## Parse command-line arguments for the pipeline
     parser = argparse.ArgumentParser(description="Automated NeuroRule Orchestration Command Interface")
     

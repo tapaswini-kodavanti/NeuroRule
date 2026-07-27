@@ -1,0 +1,213 @@
+{
+    "age_state": 0,
+    "default_action": "0",
+    "default_action_coefficient": 0.75,
+    "min_maxes": {
+        "0": {
+            "max": 28.11,
+            "min": 0.0,
+            "total": 45496.07399999991
+        },
+        "1": {
+            "max": 39.28,
+            "min": 0.0,
+            "total": 62360.99999999992
+        },
+        "10": {
+            "max": 2.873,
+            "min": 0.0,
+            "total": 1286.8104000000026
+        },
+        "11": {
+            "max": 4.885,
+            "min": 0.0,
+            "total": 3926.079900000011
+        },
+        "12": {
+            "max": 21.98,
+            "min": 0.0,
+            "total": 9108.96719999998
+        },
+        "13": {
+            "max": 542.2,
+            "min": 0.0,
+            "total": 127586.77799999992
+        },
+        "14": {
+            "max": 0.03113,
+            "min": 0.0,
+            "total": 22.763591999999992
+        },
+        "15": {
+            "max": 0.1354,
+            "min": 0.0,
+            "total": 81.46461600000013
+        },
+        "16": {
+            "max": 0.396,
+            "min": 0.0,
+            "total": 101.68886759999991
+        },
+        "17": {
+            "max": 0.05279,
+            "min": 0.0,
+            "total": 37.68740099999983
+        },
+        "18": {
+            "max": 0.07895,
+            "min": 0.0,
+            "total": 66.52390799999972
+        },
+        "19": {
+            "max": 0.02984,
+            "min": 0.0,
+            "total": 12.211981800000006
+        },
+        "2": {
+            "max": 188.5,
+            "min": 0.0,
+            "total": 295970.19000000076
+        },
+        "20": {
+            "max": 36.04,
+            "min": 0.0,
+            "total": 52290.20400000003
+        },
+        "21": {
+            "max": 49.54,
+            "min": 0.0,
+            "total": 82932.63000000006
+        },
+        "22": {
+            "max": 251.2,
+            "min": 0.0,
+            "total": 344569.25999999995
+        },
+        "23": {
+            "max": 4254.0,
+            "min": 0.0,
+            "total": 2810932.7999999984
+        },
+        "24": {
+            "max": 0.2226,
+            "min": 0.0,
+            "total": 427.4380800000007
+        },
+        "25": {
+            "max": 1.058,
+            "min": 0.0,
+            "total": 811.7757600000022
+        },
+        "26": {
+            "max": 1.252,
+            "min": 0.0,
+            "total": 863.7800820000014
+        },
+        "27": {
+            "max": 0.291,
+            "min": 0.0,
+            "total": 364.54530600000106
+        },
+        "28": {
+            "max": 0.6638,
+            "min": 0.0,
+            "total": 938.3769000000023
+        },
+        "29": {
+            "max": 0.2075,
+            "min": 0.0,
+            "total": 271.4356200000005
+        },
+        "3": {
+            "max": 2501.0,
+            "min": 0.0,
+            "total": 2097153.3
+        },
+        "4": {
+            "max": 0.1634,
+            "min": 0.0,
+            "total": 311.17946999999964
+        },
+        "5": {
+            "max": 0.3454,
+            "min": 0.0,
+            "total": 332.57352000000014
+        },
+        "6": {
+            "max": 0.4268,
+            "min": 0.0,
+            "total": 279.47901420000005
+        },
+        "7": {
+            "max": 0.2012,
+            "min": 0.0,
+            "total": 154.11425399999976
+        },
+        "8": {
+            "max": 0.304,
+            "min": 0.0,
+            "total": 585.8742000000001
+        },
+        "9": {
+            "max": 0.09744,
+            "min": 0.0,
+            "total": 203.4147000000003
+        }
+    },
+    "representation_type": "RuleBased",
+    "rules": [
+        {
+            "action": "3",
+            "action_coefficient": 0.01,
+            "action_lookback": 0,
+            "conditions": [
+                {
+                    "first_state_coefficient": 0.89,
+                    "first_state_exponent": 1,
+                    "first_state_key": "29",
+                    "first_state_lookback": 0,
+                    "operator": "<",
+                    "second_state_coefficient": 0.06,
+                    "second_state_exponent": 1,
+                    "second_state_key": "27",
+                    "second_state_lookback": 0,
+                    "second_state_value": 0.35
+                }
+            ],
+            "times_applied": 0
+        },
+        {
+            "action": "1",
+            "action_coefficient": 0.47,
+            "action_lookback": 0,
+            "conditions": [
+                {
+                    "first_state_coefficient": 0.59,
+                    "first_state_exponent": 1,
+                    "first_state_key": "22",
+                    "first_state_lookback": 0,
+                    "operator": ">",
+                    "second_state_coefficient": 0.74,
+                    "second_state_exponent": 1,
+                    "second_state_key": "28",
+                    "second_state_lookback": 0,
+                    "second_state_value": 0.63
+                },
+                {
+                    "first_state_coefficient": 0.28,
+                    "first_state_exponent": 1,
+                    "first_state_key": "14",
+                    "first_state_lookback": 0,
+                    "operator": ">",
+                    "second_state_coefficient": 0.7,
+                    "second_state_exponent": 1,
+                    "second_state_key": "15",
+                    "second_state_lookback": 0,
+                    "second_state_value": 0.66
+                }
+            ],
+            "times_applied": 0
+        }
+    ],
+    "times_applied": 1093
+}
