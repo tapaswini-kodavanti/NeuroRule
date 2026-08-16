@@ -12,7 +12,7 @@ To ensure exact package versions and dependencies are matched, set up the enviro
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/tapaswini-kodavanti/neurorule.git
+git clone https://github.com/[anonymized]/neurorule.git
 cd neurorule
 
 # 2. Create the environment from the provided environment file
@@ -104,5 +104,3 @@ neurorule/
 Runtime execution configs and dataset caches are stored under:
 * **Generated Config:** `configs/nested/tmp_active_config.json`
 * **Cached Data & Weights:** `data/{dataset}/datasets/{interval}/` and `data/{dataset}/models/{interval}/`
-
-[Paper](https://apps.cs.utexas.edu/apps/tech-reports/208654)
