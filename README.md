@@ -104,3 +104,5 @@ neurorule/
 Runtime execution configs and dataset caches are stored under:
 * **Generated Config:** `configs/nested/tmp_active_config.json`
 * **Cached Data & Weights:** `data/{dataset}/datasets/{interval}/` and `data/{dataset}/models/{interval}/`
+
+[Paper](https://arxiv.org/abs/2609.26841)
