@@ -4,6 +4,8 @@ An automated, end-to-end framework to evolve explainable rule-set models from ne
 
 This repository orchestrates the complete experimental pipeline: automatically handling input/output schema generation, dataset splitting, base model weight ingestion, synthetic data generation, and active JSON configuration construction.
 
+A paper describing NeuroRule is at <a href=//"https:arxiv.org/abs/2609.26841">arXiv:2609.26841</a>
+
 ---
 
 ## 🛠️ Installation & Environment Setup
